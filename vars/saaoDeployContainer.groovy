@@ -1,3 +1,3 @@
-def saaoDeployContainer(Map config = [:]) {
+def call(Map config = [:]) {
   sh "Hello Deployment"
 }
