@@ -2,7 +2,7 @@
 
 # Script for deploying.
 #
-# The following arguments need to be passed,m in this order:
+# The following arguments need to be passed to the script, in this order:
 #
 # 1. The container registry URLm such as https://registry.example.com.
 # 2. The container registry username.

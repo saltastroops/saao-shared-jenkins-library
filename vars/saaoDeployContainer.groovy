@@ -41,9 +41,30 @@ def call(Map config = [:])
     // error if the directory exists already.
     sshCommand remote: remote, command: "mkdir -p ${config.imageName}"
 
+    // Prepare the docker compose file
+    saaoLoadScript 'prepare_docker_compose.sh'
+    def compose_file = sh returnStdout: true, script: "./prepare_docker_compose.sh \"${config.registryUrl}\" \"${registryUsername}\" \"${config.imageName}\" \"${tag}\""
+    writeFile file: '_docker-compose.yml', text: "$compose_file"
+
     // Prepare the deployment script
     saaoLoadScript 'deployment.sh'
+    ssh
     writeFile file: '_deployment.sh', text: "./deployment.sh \"${config.registryUrl}\" \"${registryUsername}\" \"${config.imageName}\" \"${tag}\""
-    sshScript remote: remote, script: '_deployment.sh'
+
+    // Create a file with the Docker registry password
+    writeFile file: 'registry-password.txt', text: "$REGISTRY_CREDENTIALS_PSW"
+
+    // Copy the required files
+    sshPut remote: remote, from: '_docker-compose.yml', into: "${config.imageName}/docker-compose.yml"
+    sshPut remote: remote, from: '_deployment.sh', into: "${config.imageName}/deployment.sh"
+    sshCommand remote: remote, command: "chmod u+x ${config.imageName}/deployment.sh"
+    sshPut remote: remote, from: 'registry-password.txt', into: "${config.imageName}/registry-password.txt"
+    sshCommand remote: remote, command: "chmod go-rwx ${config.imageName}/registry-password.txt"
+
+    // Execute the deployment script
+    sshCommand remote: remote, command: "${config.imageName}/deployment.sh"
+
+    // Remove the remote secret file again, if it still exists
+    sshRemove remote: remote, path: 'finder-chart-generator/registry-password.txt', failOnError: false
   }
 }
