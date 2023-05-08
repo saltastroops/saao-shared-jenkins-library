@@ -26,4 +26,4 @@ docker compose down || true
 docker compose up -d
 
 # Clean up
-docker image prune
+docker image prune -f
