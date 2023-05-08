@@ -22,7 +22,7 @@ def call(Map config = [:])
                                      keyFileVariable: 'identity',
                                      usernameVariable: 'username')]) {
     // Build the Docker image
-    dockerImage = docker.build("${registryUsername}/${imageName}:${tag}")
+    dockerImage = docker.build("${registryUsername}/${config.imageName}:${tag}")
 
     // Push the image to the container registry
     docker.withRegistry(config.registryUrl, config.registryCredentialsId) {
