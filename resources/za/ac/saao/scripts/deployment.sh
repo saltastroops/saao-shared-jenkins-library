@@ -12,8 +12,6 @@
 # Pull the latest docker image and restart the service defined in the docker compose
 # file.
 
-cd "$3"
-
 # Log into the docker registry
 cat registry-password.txt | docker login --password-stdin -u "$2" "$1"
 
