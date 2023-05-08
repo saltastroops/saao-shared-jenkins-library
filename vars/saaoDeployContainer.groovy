@@ -44,6 +44,6 @@ def call(Map config = [:])
     // Prepare the deployment script
     saaoLoadScript 'deployment.sh'
     writeFile file: '_deployment.sh', text: "./deployment.sh \"${config.registryUrl}\" \"${registryUsername}\" \"${config.imageName}\" \"${tag}\""
-    sshCommand remote: remote, script: '_deployment.sh'
+    sshScript remote: remote, script: '_deployment.sh'
   }
 }
