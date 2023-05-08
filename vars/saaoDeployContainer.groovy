@@ -48,7 +48,6 @@ def call(Map config = [:])
 
     // Prepare the deployment script
     saaoLoadScript 'deployment.sh'
-    ssh
     writeFile file: '_deployment.sh', text: "./deployment.sh \"${config.registryUrl}\" \"${registryUsername}\" \"${config.imageName}\" \"${tag}\""
 
     // Create a file with the Docker registry password
