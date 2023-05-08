@@ -46,24 +46,24 @@ def call(Map config = [:])
     def compose_file = sh returnStdout: true, script: "./prepare_docker_compose.sh \"${config.registryUrl}\" \"${registryUsername}\" \"${config.imageName}\" \"${tag}\""
     writeFile file: '_docker-compose.yml', text: "$compose_file"
 
-    // Prepare the deployment script
+    // Get the deployment script
     saaoLoadScript 'deployment.sh'
-    writeFile file: '_deployment.sh', text: "./deployment.sh \"${config.registryUrl}\" \"${registryUsername}\" \"${config.imageName}\" \"${tag}\""
 
     // Create a file with the Docker registry password
     writeFile file: 'registry-password.txt', text: "$REGISTRY_CREDENTIALS_PSW"
 
     // Copy the required files
     sshPut remote: remote, from: '_docker-compose.yml', into: "${config.imageName}/docker-compose.yml"
-    sshPut remote: remote, from: '_deployment.sh', into: "${config.imageName}/deployment.sh"
+    sshPut remote: remote, from: 'deployment.sh', into: "${config.imageName}/deployment.sh"
     sshCommand remote: remote, command: "chmod u+x ${config.imageName}/deployment.sh"
     sshPut remote: remote, from: 'registry-password.txt', into: "${config.imageName}/registry-password.txt"
     sshCommand remote: remote, command: "chmod go-rwx ${config.imageName}/registry-password.txt"
 
     // Execute the deployment script
-    sshCommand remote: remote, command: "${config.imageName}/deployment.sh"
+    sshCommand remote: remote, command: "cd ${config.imageName}; ./deployment.sh \"${config.registryUrl}\" \"${registryUsername}\" \"${config.imageName}\" \"${tag}\""
 
-    // Remove the remote secret file again, if it still exists
-    sshRemove remote: remote, path: 'finder-chart-generator/registry-password.txt', failOnError: false
+    // Remove the remote files again, if they still exist
+    sshRemove remote: remote, path: "${config.imageName}/registry-password.txt", failOnError: false
+    sshRemove remote: remote, path: "${config.imageName}/deployment.sh", failOnError: false
   }
 }
