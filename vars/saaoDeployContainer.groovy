@@ -41,8 +41,9 @@ def call(Map config = [:])
     // error if the directory exists already.
     sshCommand remote: remote, command: "mkdir -p ${config.imageName}"
 
-    // Prepare the deployment script.
+    // Prepare the deployment script
     saaoLoadScript 'deployment.sh'
-    sh "./deployment.sh ${config.registryUrl} ${registryUsername} ${config.imageName} ${tag}"
+    writeFile file: '_deployment.sh', text: "./deployment.sh \"${config.registryUrl}\" \"${registryUsername}\" \"${config.imageName}\" \"${tag}\""
+    sshCommand remote: remote, script: '_deployment.sh'
   }
 }
