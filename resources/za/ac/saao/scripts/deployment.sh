@@ -15,8 +15,8 @@
 # Log into the docker registry
 cat registry-password.txt | docker login --password-stdin -u "$2" "$1"
 
-# Pull the docker image
-docker pull "$3:$4"
+# Pull the docker image for the service, but don't restart the service
+docker compose pull
 
 # Log out from the Docker registry again
 docker logout "$1"
