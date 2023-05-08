@@ -7,9 +7,11 @@ def call(Map config = [:]) {
     }
   }
 
-  _deployToRegistry()
-}
+  // Use the short git hash as the image tag
+  def tag = sh returnStdout: true, script: 'git rev-parse --short HEAD | tr -d "\n"'
 
-def _deployToRegistry() {
-  echo 'Deploying...'
+  // Get the credentials
+  withCredentials([usernamePassword(credentialsId: config.registryCredentialsId, passwordVariable: 'registryPassword', usernameVariable: 'registryUsername')]) {
+    dockerImage = docker.build("${registryUsername}/finder-chart-generator:${tag}")
+  }
 }
