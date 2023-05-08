@@ -3,7 +3,7 @@ def call(Map config = [:])
   // Ensure all required arguments are given
   String[] arguments = ["host",
                         "hostCredentialsId",
-                        "hostDir",
+                        "imageName",
                         "registryCredentialsId",
                         "registryUrl"]
   for (String argument : arguments) {
@@ -22,7 +22,7 @@ def call(Map config = [:])
                                      keyFileVariable: 'identity',
                                      usernameVariable: 'username')]) {
     // Build the Docker image
-    dockerImage = docker.build("${registryUsername}/finder-chart-generator:${tag}")
+    dockerImage = docker.build("${registryUsername}/${imageName}:${tag}")
 
     // Push the image to the container registry
     docker.withRegistry(config.registryUrl, config.registryCredentialsId) {
@@ -39,6 +39,10 @@ def call(Map config = [:])
 
     // Create the necessary remote directory. The -p flag is used to avoid an
     // error if the directory exists already.
-    sshCommand remote: remote, command: "mkdir -p ${config.hostDir}"
+    sshCommand remote: remote, command: "mkdir -p ${config.imageName}"
+
+    // Prepare the deployment script.
+    saaoLoadScript 'deployment.sh'
+    sh "./deployment.sh ${config.registryUrl} ${registryUsername} ${config.imageName} ${tag}"
   }
 }
