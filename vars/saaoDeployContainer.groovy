@@ -1,3 +1,7 @@
 def call(Map config = [:]) {
-  sh "Hello Deployment"
+  _deployToRegistry()
+}
+
+def _deployToRegistry() {
+  echo 'Deploying...'
 }
