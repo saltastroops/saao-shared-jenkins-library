@@ -1,4 +1,6 @@
 class Script {
+  private final def script
+
   public Script(def script) {
     this.script = script
   }
