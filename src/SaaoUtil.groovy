@@ -1,7 +1,7 @@
 class SaaoUtil {
   private final def script
 
-  public Script(def script) {
+  public SaaoUtil(def script) {
     this.script = script
   }
 
