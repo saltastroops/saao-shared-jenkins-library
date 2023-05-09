@@ -63,9 +63,9 @@ def call(Map config = [:])
     sshCommand remote: remote, command: "chmod go-rwx ${config.imageName}/registry-password.txt"
 
     // Copy the secret files
-    for (credentialsId in config.secretFiles) {
-      secretFile = credentials credentialsId
-      targetPath = "${config.imageName}/${config.secretFiles[credentialId]}"
+    for (entry in config.secretFiles) {
+      secretFile = credentials entry.key
+      targetPath = "${config.imageName}/${entry.value}"
       sshPut remote: remote, from: secretFile, into: targetPath
     }
 
