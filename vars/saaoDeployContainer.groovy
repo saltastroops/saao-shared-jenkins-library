@@ -64,7 +64,7 @@ def call(Map config = [:])
 
     // Copy the secret files
     secretFiles.each { key, value ->
-      withCredentials([file(credentialsId: entry.key, variable: 'secretFile')]) {
+      withCredentials([file(credentialsId: key, variable: 'secretFile')]) {
         print("${key} -- ${value} -- ${secretFile.toString()}")
 
 //        targetPath = "${config.imageName}/${entry.value}"
