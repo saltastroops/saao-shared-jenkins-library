@@ -64,10 +64,11 @@ def call(Map config = [:])
 
     // Copy the secret files
     for (entry in config.secretFiles) {
-      withCredentials([file(credentialsId: entry.key, variable: 'secretFile')]) {
-        targetPath = "${config.imageName}/${entry.value}"
-        sshPut remote: remote, from: secretFile, into: targetPath
-      }
+      echo "${entry.key} -- ${entry.value}"
+//      withCredentials([file(credentialsId: entry.key, variable: 'secretFile')]) {
+//        targetPath = "${config.imageName}/${entry.value}"
+//        sshPut remote: remote, from: secretFile, into: targetPath
+//      }
     }
 
     // Execute the deployment script
