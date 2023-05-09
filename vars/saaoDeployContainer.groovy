@@ -2,8 +2,7 @@ import Script
 
 def call(Map config = [:])
 {
-  def s = new Script(this)
-  s.sayHello();
+  def saaoUtil = new SaaoUtil(this)
 
   // Ensure all required arguments are given
   String[] arguments = ["host",
@@ -50,12 +49,12 @@ def call(Map config = [:])
     sshCommand remote: remote, command: "mkdir -p ${config.imageName}"
 
     // Prepare the docker compose file
-    saaoLoadScript 'prepare_docker_compose.sh'
+    saaoUtil.loadScript 'prepare_docker_compose.sh'
     def compose_file = sh returnStdout: true, script: "./prepare_docker_compose.sh \"${config.registryUrl}\" \"${registryUsername}\" \"${config.imageName}\" \"${tag}\""
     writeFile file: '_docker-compose.yml', text: "$compose_file"
 
     // Get the deployment script
-    saaoLoadScript 'deployment.sh'
+    saaoUtil.loadScript 'deployment.sh'
 
     // Create a file with the Docker registry password
     writeFile file: 'registry-password.txt', text: registryPassword
