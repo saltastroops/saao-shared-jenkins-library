@@ -53,7 +53,7 @@ def call(Map config = [:])
     saaoLoadScript 'deployment.sh'
 
     // Create a file with the Docker registry password
-    writeFile file: 'registry-password.txt', text: "$REGISTRY_CREDENTIALS_PSW"
+    writeFile file: 'registry-password.txt', text: registryPassword
 
     // Copy the required files
     sshPut remote: remote, from: '_docker-compose.yml', into: "${config.imageName}/docker-compose.yml"
