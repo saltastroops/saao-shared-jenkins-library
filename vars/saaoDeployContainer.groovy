@@ -2,7 +2,7 @@ import Script
 
 def call(Map config = [:])
 {
-  def s = Script(this)
+  def s = new Script(this)
   s.sayHello();
 
   // Ensure all required arguments are given
