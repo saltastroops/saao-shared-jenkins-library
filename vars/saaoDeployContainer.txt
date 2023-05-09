@@ -1,0 +1,28 @@
+<div class="help" style="display: block">
+<p>Builds a Docker image, pushes it to a container registry and deploys a container for it.</p>
+
+<p>A map with the following values must be passed to the function.</p>
+
+<dl>
+  <dt><code>host</code></dt>
+  <dd>The deployment server. An example value would be `dev.example.com`.</dd>
+
+  <dt><code>hostCredentialsId</code></dt>
+  <dd>The identifier of the SSH username and private key credentials for the deployment server.</dd>
+
+  <dt><code>imageName</code></dt>
+  <dd>The name of the Docker image. This will also be used as the name of the folder used for the deployment on the deployment server.</dd>
+
+  <dt><code>registryCredentialsId</code></dt>
+  <dd>The identifier of the username and password credentials for the container registry.</dd>
+
+  <dt><code>registryUrl</code></dt>
+  <dd>The URL of the container registry. An example value would be `https://registry.example.com`.</dd>
+
+  <dt><code>secretFiles</code> (optional)</dt>
+  <dd>A map of identifiers of secret file credentials and file paths. Each secret file will be copied to the corresponding file path on the deployment server. An example value would be `['my-great-webapp-env': '.env']`. In this example a file `.env` would be created on the deployment server.</dd>
+</dl>
+
+<p>See the [documentation](https://github.com/saltastroops/saao-shared-jenkins-library) for more details.</p>
+</div>
+
