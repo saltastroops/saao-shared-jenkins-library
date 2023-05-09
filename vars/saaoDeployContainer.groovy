@@ -1,6 +1,8 @@
+import za.ac.saao.util.Script
+
 def call(Map config = [:])
 {
-  StringUtilities.sayHello();
+  Script.sayHello();
 
   // Ensure all required arguments are given
   String[] arguments = ["host",
