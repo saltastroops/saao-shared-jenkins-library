@@ -90,19 +90,19 @@ services:
 
 The `saaoDeployContainer` function takes several arguments, all of which are required.
 
-| Argument              | Required?                                                                                                                                                                             | Explanation                                                                                                                                                              | Example value                   |
-|--------|---|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------|
-| host                  | Yes | Address of the deployment server.                                                                                                                                                     | dev.example.com                 |
-| hostCredentialsId     | Yes | Identifier of the credentials for the username on the deployment server and the private SSH key of the Jenkins user.                                                                  | dev-server-credentials         |
-| imageName          | Yes   | Name of the Docker image to deploy. This name is also used as the name of the deployment directory (on the deployment server), which will be created in the user's home directory.    | my-great-webapp                 |
-| registryUrl      | Yes     | URL of the container registry.                                                                                                                                                        | https://registry.example.com    |
+| Argument             | Required?                                                                                                                                                                             | Explanation                                                                                                                                                              | Example value                   |
+|--------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------|
+| host                 | Yes | Address of the deployment server.                                                                                                                                                     | dev.example.com                 |
+| hostCredentialsId    | Yes | Identifier of the credentials for the username on the deployment server and the private SSH key of the Jenkins user.                                                                  | dev-server-credentials         |
+| imageName         | Yes   | Name of the Docker image to deploy. This name is also used as the name of the deployment directory (on the deployment server), which will be created in the user's home directory.    | my-great-webapp                 |
+| registryUrl     | Yes     | URL of the container registry.                                                                                                                                                        | https://registry.example.com    |
 | registryCredentialsId | Yes | Identifier of the credentials for the container registry username and password.                                                                                                       | registry-credentials |
-| secretFiles      | No     | Map of credentials identifiers and file paths, as explained below.                                                                                                                   | ['my-great-webapp-env': '.env'] |
+| secretFiles     | No     | Map of credentials identifiers and file paths, as explained below.                                                                                                                   | ['my-great-webapp-env': '.env'] |
 
 The credentials identifier is the ID you provide when creating new credentials, as highlighted in the following screenshot.
+
+![Credentials ID](doc/images/credentials_identifier.png)
 
 If your docker compose files requires (secret) configuration files, most likely a `.ewnv` file, you should add these as credentials of type "Secret file" to Jenkins. You can then pass a map of these identifiers and host file paths as the `secretFiles` argument. The file paths refer to the locations to where the file should be copied, and they are given relative to the project's directory on the host.
 
 For example, if the `imageName` argument is `my-great-webapp` and the `secretFiles` argument is `['mgw-1': '.env', 'mgw-2': 'a/.env2']`, the files `~/.env` and `~/a/.env2` will be created on the deployment host.
-
-![Credentials ID](doc/images/credentials_identifier.png)
