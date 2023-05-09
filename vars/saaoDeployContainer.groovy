@@ -1,4 +1,4 @@
-import za.ac.saao.util.Script
+import Script
 
 def call(Map config = [:])
 {
