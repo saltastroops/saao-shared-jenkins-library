@@ -63,13 +63,13 @@ def call(Map config = [:])
     sshCommand remote: remote, command: "chmod go-rwx ${config.imageName}/registry-password.txt"
 
     // Copy the secret files
+    // Note: You cannot use a for loop here, as Jenkins would try to serialize a
+    // non-serializable entry (see
+    // https://stackoverflow.com/questions/60900302/jenkins-pipeline-how-do-i-use-the-sh-module-when-traversing-a-map)
     config.secretFiles.each { key, value ->
       withCredentials([file(credentialsId: key, variable: 'secretFile')]) {
-        print("${key} -- ${value} -- ${secretFile.toString()}")
-
-//        targetPath = "${config.imageName}/${entry.value}"
-//        echo "${secretFile} -------"
-//        // sshPut remote: remote, from: secretFile, into: targetPath
+        targetPath = "${config.imageName}/${value}"
+        sshPut remote: remote, from: secretFile, into: targetPath
       }
     }
 
