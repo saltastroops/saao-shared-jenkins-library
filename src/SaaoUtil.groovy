@@ -8,6 +8,6 @@ class SaaoUtil {
   public void loadScript(def name) {
     def scriptContent = this.script.libraryResource "za/ac/saao/scripts/${name}"
     this.script.writeFile file: name, text: scriptContent
-    sh "chmod a+x ${name}"
+    this.script.sh "chmod a+x ${name}"
   }
 }
