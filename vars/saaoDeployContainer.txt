@@ -23,6 +23,6 @@
   <dd>A map of identifiers of secret file credentials and file paths. Each secret file will be copied to the corresponding file path on the deployment server. An example value would be `['my-great-webapp-env': '.env']`. In this example a file `.env` would be created on the deployment server.</dd>
 </dl>
 
-<p>See the [documentation](https://github.com/saltastroops/saao-shared-jenkins-library) for more details.</p>
+<p>See the <a href="https://github.com/saltastroops/saao-shared-jenkins-library">documentation</a> for more details.</p>
 </div>
 
