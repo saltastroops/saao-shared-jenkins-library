@@ -11,6 +11,9 @@ def call(Map config = [:])
       error "The ${argument} argument is missing."
     }
   }
+  if (!config.containsKey('secretFiles')) {
+    config.secretFiles = []
+  }
 
   // Use the short git hash as the image tag
   def tag = sh returnStdout: true, script: 'git rev-parse --short HEAD | tr -d "\n"'
@@ -58,6 +61,13 @@ def call(Map config = [:])
     sshCommand remote: remote, command: "chmod u+x ${config.imageName}/deployment.sh"
     sshPut remote: remote, from: 'registry-password.txt', into: "${config.imageName}/registry-password.txt"
     sshCommand remote: remote, command: "chmod go-rwx ${config.imageName}/registry-password.txt"
+
+    // Copy the secret files
+    for (credentialsId in config.secretFiles) {
+      secretFile = credentials credentialsId
+      targetPath = "${config.imageName}/${config.secretFiles[credentialId]}"
+      sshPut remote: remote, from: secretFile, into: targetPath
+    }
 
     // Execute the deployment script
     sshCommand remote: remote, command: "cd ${config.imageName}; ./deployment.sh \"${config.registryUrl}\" \"${registryUsername}\" \"${config.imageName}\" \"${tag}\""
