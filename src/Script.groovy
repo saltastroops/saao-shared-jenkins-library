@@ -1,5 +1,9 @@
 class Script {
-  public static void sayHello() {
-    echo "Hello"
+  public Script(def script) {
+    this.script = script
+  }
+
+  public void sayHello() {
+    this.script.echo "Hello"
   }
 }

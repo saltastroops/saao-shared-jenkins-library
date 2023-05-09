@@ -2,7 +2,8 @@ import Script
 
 def call(Map config = [:])
 {
-  Script.sayHello();
+  def s = Script(this)
+  s.sayHello();
 
   // Ensure all required arguments are given
   String[] arguments = ["host",
