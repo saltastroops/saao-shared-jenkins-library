@@ -1,6 +1,6 @@
 def call(Map config = [:])
 {
-  za.StringUtilities.sayHello();
+  StringUtilities.sayHello();
 
   // Ensure all required arguments are given
   String[] arguments = ["host",
