@@ -103,6 +103,7 @@ This function builds an image of the current directory, pushes the image to a re
 3. The image is pushed to a container registry.
 4. On the deployment server, the image just pushed is pulled.
 5. Still on the deployment server, docker compose is used to restart the services.
+6. Finally, the docker images on the deployment server are pruned.
 
 Various requirements must be met for this function.
 
