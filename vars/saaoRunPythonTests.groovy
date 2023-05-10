@@ -3,6 +3,7 @@ def call(Map config = [:] ) {
   def banditDirs = _dirs(config, "bandit")
   def flake8Dirs = _dirs(config, "flake8")
   echo banditDirs.toString()
+  echo flake8Dirs.toString()
 }
 
 def _dirs(Map config, String key) {
