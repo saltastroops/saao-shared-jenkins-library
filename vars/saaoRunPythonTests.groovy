@@ -46,7 +46,7 @@ def call(Map config = [:] ) {
 
   // Run mypy
   if (mypyDirs.length() > 0) {
-    returnValue = sh 'returnStatus': true, 'script': "$mypyDirs"
+    returnValue = sh 'returnStatus': true, 'script': "mypy $mypyDirs"
     if (returnValue != 0) {
       echo "mypy failed."
       success = false
@@ -55,7 +55,7 @@ def call(Map config = [:] ) {
 
   // Run pytest
   if (pytestDirs.length() > 0) {
-    returnValue = sh 'returnStatus': true, 'script': "$pytestDirs"
+    returnValue = sh 'returnStatus': true, 'script': "pytest $pytestDirs"
     if (returnValue != 0) {
       echo "pytest failed."
       success = false
