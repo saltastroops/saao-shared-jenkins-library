@@ -1,3 +1,47 @@
 <div class="help" style="display: block">
-<p>Runs various linting tools and pytest.</p>
+<p>Lets you run the following tools for linting and testing Python code:</p>
+
+<ul>
+<li>bandit</li>
+<li>black</li>
+<li>flake8</li>
+<li>isort</li>
+<li>mypy</li>
+<li>pytest</li>
+</ul>
+
+<p>A map with the following values may be passed to the function.</p>
+
+<dl>
+<dt>`bandit`</dt>
+<dd>The list of paths to check with bandit.
+<dt>`black`</dt>
+<dd>The list of paths to check with black.
+<dt>`flake8`</dt>
+<dd>The list of paths to check with flake8.
+<dt>`isort`</dt>
+<dd>The list of paths to check with isort.
+<dt>`mypy`</dt>
+<dd>The list of paths to check with mypy.
+<dt>`pytest`</dt>
+<dd>The list of paths to check with pytest.
+</dl>
+
+<p>The list of paths must be passed as a list of strings. For example, if you want to
+check the paths `src` and `tests`, you would pass `['src', 'tests']`. All the keys are
+optional; a test is only run if the corresponding key is included and its value is not
+an empty list. In the following example only black and pytest are run:</p>
+
+<pre>
+saaoRunPythonTests 'bandit': [], 'black': ['src', 'tests'], 'pytest': ['tests']
+</pre>
+
+<p>The function returns <code>true</code> if all tests pass, and <code>false</code>
+otherwise.</p>
+
+<p>See the <a href="https://github.com/saltastroops/saao-shared-jenkins-library">documentation</a> for more details.</p>
+</div>
+
+
+
 </div>

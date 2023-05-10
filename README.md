@@ -99,6 +99,7 @@ You can now scroll to the documentation for the function you need.
 This function can be used to run the following Python tools for testing:
 
 * bandit
+* black
 * flake8
 * isort
 * mypy
@@ -147,6 +148,23 @@ pipeline {
 
 The `args` string passed to `dockerfile` adds a Docker volume for caching the installed Python libraries, significantly speeding up the pipeline execution time. Also, it makes sure that the script is run as the root user, avoiding permission issues.
 
+`saaoRunPythonTests` takes several arguments (as a map).
+
+| Argument | Required? | Explanation                 | Example value     |
+|----------|---|-----------------------------|-------------------|
+| bandit   | No | Paths to check with bandit. | `['src']`         |
+| black    | No | Paths to check with black.  | `['src', 'tests']`         |
+| flake8   | No | Paths to check with flake8. | `['src', 'tests']`         |
+| isort    | No | Paths to check with isort.  | `['src', 'tests']`         |
+| mypy     | No | Paths to check with mypy.   | `['src', 'tests']` |
+| pytest   | No | Paths to check with pytest. | `['tests']`       |
+
+A check is only performed if the corresponding argument is included and its value is not an empty list. For example, the following call would run black on the `src` and `tests` folder and pytest on the `tests` folder, but would run no other tools.
+
+```groovy
+saaoRunPythonTests 'black': ['src', 'tests'], 'pytest': ['tests']
+```
+
 ### `saaoDeployContainer`
 
 This function builds an image of the current directory, pushes the image to a registry and deploys a container to a server. More precisely, the following steps are carried out by the function.
@@ -177,7 +195,7 @@ services:
     restart: always
 ```
 
-The `saaoDeployContainer` function takes several arguments, all of which are required.
+`saaoDeployContainer` takes several arguments (as a map).
 
 | Argument             | Required?                                                                                                                                                                             | Explanation                                                                                                                                                                        | Example value                   |
 |--------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------|
