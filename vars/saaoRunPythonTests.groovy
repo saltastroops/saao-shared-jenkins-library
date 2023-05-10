@@ -8,7 +8,7 @@ def call(Map config = [:] ) {
   def pytestDirs = _dirs(config, "pytest")
 
   // Run bandit
-  def success = false
+  def success = true
   if (banditDirs.length() > 0) {
     returnValue = sh 'returnStatus': true, 'script': "bandit -r $banditDirs"
     if (returnValue != 0) {
