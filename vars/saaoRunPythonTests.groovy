@@ -60,8 +60,9 @@ def call(Map config = [:] ) {
       echo "pytest failed."
       success = false
     }
+  }
 
-    return success
+  return success
 }
 
 def _dirs(Map config, String key) {
