@@ -1,3 +1,3 @@
 def call() {
-  echo "Hello World"
+  sh 'black --check fcg tests'
 }
