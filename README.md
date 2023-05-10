@@ -2,15 +2,50 @@
 
 This shared library contains various global variables (steps) which you can use in Jenkins pipelines for SAAO projects.
 
+## Dependencies
+
+This library has several dependencies.
+
+### Docker
+
+Docker must be installed on your machine, and it must be in the `PATH` used by the Jenkins server.
+
+If you install Jenkins with Homebrew on macOS, you thus have to modify the file `/usr/local/Cellar/jenkins/NNN/homebrew.mxcl.jenkins.plist` (where `NNN` is the version number of Jenkins), adding the following lines.
+
+```
+<key>EnvironmentVariables</key>
+<dict>
+<key>PATH</key>
+<string>/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Applications/Docker.app/Contents/Resources/bin/:/Users/XXX/Library/Group\ Containers/group.com.docker/Applications/Docker.app/Contents/Resources/bin</string>
+</dict>
+```
+
+Here `XXX` denotes your username. Afterwards you need to restart Jenkins.
+
+```shell
+brew services restart jenkins 
+```
+
+### Plugins
+
+In addition to the recommended plugins installed when first starting Jenkins the following plugins are required.
+
+* [Docker Pipeline](https://plugins.jenkins.io/docker-workflow/) (Note this is not the same as the "Docker" plugin.)
+* [SSH Pipeline Steps](https://plugins.jenkins.io/ssh-steps/)
+
+### Other requirements
+
+Some of the functions may require software like Python. The easiest way to accommodate such requirements by running your pipeline by a Docker agent specified by a Dockerfile provided along with your project. This will be explained in more detail when discussing the `saaoRunPythonTests` function below.
+
 ## Installation
 
 You first have to configure Jenkins to use the library. Go to the Jenkins dashboard and select the "Manage Jenkins" option from the sidebar menu.
 
 ![Manage Jenkins menu item](doc/images/manage_jenkins.png)
 
-Select the "Configure System" option.
+Select the "System" option.
 
-![Configure System option](doc/images/configure_system.png)
+![System option](doc/images/configure_system.png)
 
 The system configuration page is quite long, but if you scroll down, you will eventually find the section for adding global pipeline libraries.
 
@@ -56,3 +91,54 @@ Then choose the Global Variables Reference item from the sidebar menu.
 ![Global Variables Reference menu item](doc/images/global_variables_reference.png)
 
 You can now scroll to the documentation for the function you need.
+
+## Available functions
+
+### `saaoDeployContainer`
+
+This function builds an image of the current directory, pushes the image to a registry and deploys a container to a server. More precisely, the following steps are carried out by the function.
+
+1. An image is built using the Dockerfile in the root directory of the workspace.
+2. The image is tagged with the short hashcode of the git head.
+3. The image is pushed to a container registry.
+4. On the deployment server, the image just pushed is pulled.
+5. Still on the deployment server, docker compose is used to restart the services.
+6. Finally, the docker images on the deployment server are pruned.
+
+Various requirements must be met for this function.
+
+* The public SSH key of the Jenkins user must be included in the `authorized_keys` file of the user on the deployment server.
+* The username for the deployment server and the private SSH _of the Jenkins user_ must be stored as credentials of the type "SSH username with private key".
+* The username and password for the container registry must be stored as credentials of the type "Username with password".
+* The docker compose file must only define a single service, and that service must use the deployed image. The registry, image name and image tag should not be given explicitly, but in form of environment variables `$REGISTRY`, `$IMAGE_NAME` and `$TAG`.
+* Apart from standard plugins, the [SSH Pipeline Steps](https://plugins.jenkins.io/ssh-steps/) must be installed.
+
+The following is an example of what the docker compose file might look like.
+
+```yaml
+services:
+  fcg:
+    image: ${REGISTRY}/${REGISTRY_USERNAME}/${IMAGE_NAME}:${TAG}
+    ports:
+      - 6789:8000
+    restart: always
+```
+
+The `saaoDeployContainer` function takes several arguments, all of which are required.
+
+| Argument             | Required?                                                                                                                                                                             | Explanation                                                                                                                                                                        | Example value                   |
+|--------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------|
+| host                 | Yes | Address of the deployment server.                                                                                                                                                  | dev.example.com                 |
+| hostCredentialsId    | Yes | Identifier of the credentials for the username on the deployment server and the private SSH key of the Jenkins user.                                                               | dev-server-credentials         |
+| imageName         | Yes   | Name of the Docker image to deploy. This name is also used as the name of the deployment directory (on the deployment server), which will be created in the user's home directory. | my-great-webapp                 |
+| registryCredentialsId | Yes | Identifier of the credentials for the container registry username and password.                                                                                                    | registry-credentials |
+| registryUrl     | Yes     | URL of the container registry.                                                                                                                                                     | https://registry.example.com    |
+| secretFiles     | No     | Map of credentials identifiers and file paths, as explained below. If a file path contains a directory, that directory must exist on the host already.                             | ['my-great-webapp-env': '.env'] |
+
+The credentials identifier is the ID you provide when creating new credentials, as highlighted in the following screenshot.
+
+![Credentials ID](doc/images/credentials_identifier.png)
+
+If your docker compose files requires (secret) configuration files, most likely a `.ewnv` file, you should add these as credentials of type "Secret file" to Jenkins. You can then pass a map of these identifiers and host file paths as the `secretFiles` argument. The file paths refer to the locations to where the file should be copied, and they are given relative to the project's directory on the host.
+
+For example, if the `imageName` argument is `my-great-webapp` and the `secretFiles` argument is `['mgw-1': '.env', 'mgw-2': 'a/.env2']`, the files `~/.env` and `~/a/.env2` will be created on the deployment host. Note that in this case the directory `~/a` must already exist when the pipeline is run.
