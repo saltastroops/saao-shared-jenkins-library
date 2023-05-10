@@ -2,15 +2,50 @@
 
 This shared library contains various global variables (steps) which you can use in Jenkins pipelines for SAAO projects.
 
+## Dependencies
+
+This library has several dependencies.
+
+### Docker
+
+Docker must be installed on your machine, and it must be in the `PATH` used by the Jenkins server.
+
+If you install Jenkins with Homebrew on macOS, you thus have to modify the file `/usr/local/Cellar/jenkins/NNN/homebrew.mxcl.jenkins.plist` (where `NNN` is the version number of Jenkins), adding the following lines.
+
+```
+<key>EnvironmentVariables</key>
+<dict>
+<key>PATH</key>
+<string>/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Applications/Docker.app/Contents/Resources/bin/:/Users/XXX/Library/Group\ Containers/group.com.docker/Applications/Docker.app/Contents/Resources/bin</string>
+</dict>
+```
+
+Here `XXX` denotes your username. Afterwards you need to restart Jenkins.
+
+```shell
+brew services restart jenkins 
+```
+
+### Plugins
+
+In addition to the recommended plugins installed when first starting Jenkins the following plugins are required.
+
+* [Docker Pipeline](https://plugins.jenkins.io/docker-workflow/) (Note this is not the same as the "Docker" plugin.)
+* [SSH Pipeline Steps](https://plugins.jenkins.io/ssh-steps/)
+
+### Other requirements
+
+Some of the functions may require software like Python. The easiest way to accommodate such requirements by running your pipeline by a Docker agent specified by a Dockerfile provided along with your project. This will be explained in more detail when discussing the `saaoRunPythonTests` function below.
+
 ## Installation
 
 You first have to configure Jenkins to use the library. Go to the Jenkins dashboard and select the "Manage Jenkins" option from the sidebar menu.
 
 ![Manage Jenkins menu item](doc/images/manage_jenkins.png)
 
-Select the "Configure System" option.
+Select the "System" option.
 
-![Configure System option](doc/images/configure_system.png)
+![System option](doc/images/configure_system.png)
 
 The system configuration page is quite long, but if you scroll down, you will eventually find the section for adding global pipeline libraries.
 
