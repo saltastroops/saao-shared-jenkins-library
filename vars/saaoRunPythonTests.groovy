@@ -7,7 +7,7 @@ def call(Map config = [:] ) {
   def mypyDirs = _dirs(config, "mypy")
   def pytestDirs = _dirs(config, "pytest")
 
-  // Run the various tests
+  // Run bandit
   def success = false
   if (banditDirs.length() > 0) {
     returnValue = sh 'returnStatus': true, 'script': "bandit -r $banditDirs"
@@ -16,7 +16,52 @@ def call(Map config = [:] ) {
       success = false
     }
   }
-  return success
+
+  // Run black
+  if (blackDirs.length() > 0) {
+    returnValue = sh 'returnStatus': true, 'script': "black --check $blackDirs"
+    if (returnValue != 0) {
+      echo "black failed."
+      success = false
+    }
+  }
+
+  // Run flake8
+  if (flake8Dirs.length() > 0) {
+    returnValue = sh 'returnStatus': true, 'script': "flake8 $flake8Dirs"
+    if (returnValue != 0) {
+      echo "flake8 failed."
+      success = false
+    }
+  }
+
+  // Run isort
+  if (isortDirs.length() > 0) {
+    returnValue = sh 'returnStatus': true, 'script': "isort --check-only $isortDirs"
+    if (returnValue != 0) {
+      echo "isort failed."
+      success = false
+    }
+  }
+
+  // Run mypy
+  if (mypyDirs.length() > 0) {
+    returnValue = sh 'returnStatus': true, 'script': "$mypyDirs"
+    if (returnValue != 0) {
+      echo "mypy failed."
+      success = false
+    }
+  }
+
+  // Run pytest
+  if (pytestDirs.length() > 0) {
+    returnValue = sh 'returnStatus': true, 'script': "$pytestDirs"
+    if (returnValue != 0) {
+      echo "pytest failed."
+      success = false
+    }
+
+    return success
 }
 
 def _dirs(Map config, String key) {
