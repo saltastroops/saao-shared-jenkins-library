@@ -94,6 +94,59 @@ You can now scroll to the documentation for the function you need.
 
 ## Available functions
 
+### `saaoRunPythonTests`
+
+This function can be used to run the following Python tools for testing:
+
+* bandit
+* flake8
+* isort
+* mypy
+* pytest
+
+It requires Python and the various tools to be available on the agent on which the job is run. The best way to ensure this is run a Docker agent with a Dockerfile supplied by your project.
+
+For example, assume your project contains a file `jenkins/agent/Dockerfile` with the following content.
+
+```dockerfile
+FROM python:3.10 AS requirements
+
+RUN apt-get update -y
+
+RUN curl -sSL https://install.python-poetry.org | POETRY_HOME=/usr/local python3 -
+
+RUN pip install wheel
+RUN pip install bandit black flake8 isort mypy
+```
+
+This file installs Python 3.10 and all the required libraries. It also installs Poetry, which is *not* required for `saaoRunPythonTests` but might be used by your project.
+
+Then a pipeline script for running Python tests might look as follows.
+
+```groovy
+@Library('saao-shared-library@run-python-tests') _
+
+pipeline {
+  agent {
+    dockerfile {
+      filename 'Dockerfile'
+      dir 'jenkins/dev-deployment'
+      args '-v finder-chart-generator-venv:/venv -u 0:0'
+    }
+  }
+
+  stages {
+    stage("Run tests") {
+      steps {
+        sh 'echo $PATH'
+        sh 'poetry export -f requirements.txt --with dev --output requirements.txt'
+        saaoRunPythonTests()
+      }
+    }
+```
+
+The `args` string passed to `dockerfile` adds a Docker volume for caching the installed Python libraries, significantly speeding up the pipeline execution time. Also, it makes sure that the script is run as the root user, avoiding permission issues.
+
 ### `saaoDeployContainer`
 
 This function builds an image of the current directory, pushes the image to a registry and deploys a container to a server. More precisely, the following steps are carried out by the function.
