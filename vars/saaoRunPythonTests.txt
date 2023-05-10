@@ -1,0 +1,3 @@
+<div class="help" style="display: block">
+<p>Runs various linting tools and pytest.</p>
+</div>
