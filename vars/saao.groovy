@@ -9,16 +9,18 @@ def runPythonTests(Map config = [:] ) {
   def mypyDirs = _dirs(config, "mypy")
   def pytestDirs = _dirs(config, "pytest")
 
-  // Get the Allure report option
-  def allureReportOption = ''
-  if (config.containsKey('allure') && config.allure.length() > 0) {
-    allureReportOption = "--alluredir=${config.allure}";
+  // Get the Allure option
+  def allureOption = ''
+  if (!config.containsKey('allure') || config.allure) {
+    allureOption = "--alluredir=reports/allure";
   }
 
-  // Get the JUnit report option
-  def junitReportOption = ''
-  if (config.containsKey('junit') && config.junit.length() > 0) {
-    junitReportOption = "--cov-report=xml:${config.junit}/coverage.xml --junitxml=${config.junit}/junit.xml"
+  // Get the Warnings Next Generation report options
+  def wngFlake8Options = ''
+  def wngMypyRedirection = ''
+  if (!config.containsKey('warningsNextGeneration') || config.warningsNextGeneration) {
+    wngFlake8Options = "--format=pylint --output-file=reports/warnings-next-generation/flake8.txt"
+    wngMypyRedirection = " | tee reports/warnings-next-generation/mypy.txt"
   }
 
   // Run bandit
@@ -42,7 +44,7 @@ def runPythonTests(Map config = [:] ) {
 
   // Run flake8
   if (flake8Dirs.length() > 0) {
-    returnValue = sh 'returnStatus': true, 'script': "flake8 $flake8Dirs"
+    returnValue = sh 'returnStatus': true, 'script': "flake8 $wngFlake8Options $flake8Dirs"
     if (returnValue != 0) {
       echo "flake8 failed."
       success = false
@@ -60,7 +62,7 @@ def runPythonTests(Map config = [:] ) {
 
   // Run mypy
   if (mypyDirs.length() > 0) {
-    returnValue = sh 'returnStatus': true, 'script': "mypy $mypyDirs"
+    returnValue = sh 'returnStatus': true, 'script': "mypy $mypyDirs $wngMypyRedirection"
     if (returnValue != 0) {
       echo "mypy failed."
       success = false
@@ -71,7 +73,7 @@ def runPythonTests(Map config = [:] ) {
   if (pytestDirs.length() > 0) {
     returnValue = sh(
             'returnStatus': true,
-            'script': "pytest $allureReportOption $junitReportOption $pytestDirs"
+            'script': "pytest $allureOption $pytestDirs"
     )
     if (returnValue != 0) {
       echo "pytest failed."
