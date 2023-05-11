@@ -9,7 +9,7 @@ def call(Map config = [:] ) {
 
   def junitReportOption = ''
   if (config.containsKey('junit') && config.junit.length() > 0) {
-    junitReportOption = "--cov-report=xml:${config.junit}/coverage.xml --junitxml=${config.junit}/junit.xml"
+    junitReportOption = " --junitxml=${config.junit}/junit.xml"
   }
 
   // Run bandit
