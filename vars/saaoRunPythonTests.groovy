@@ -7,9 +7,16 @@ def call(Map config = [:] ) {
   def mypyDirs = _dirs(config, "mypy")
   def pytestDirs = _dirs(config, "pytest")
 
+  // Get the Allure report option
+  def allureReportOption = ''
+  if (config.containsKey('allure') && config.allure.length() > 0) {
+    allureReportOption = "--alluredir=${config.allure}";
+  }
+
+  // Get the JUnit report option
   def junitReportOption = ''
   if (config.containsKey('junit') && config.junit.length() > 0) {
-    junitReportOption = " --junitxml=${config.junit}/junit.xml"
+    junitReportOption = "--cov-report=xml:${config.junit}/coverage.xml --junitxml=${config.junit}/junit.xml"
   }
 
   // Run bandit
@@ -60,7 +67,10 @@ def call(Map config = [:] ) {
 
   // Run pytest
   if (pytestDirs.length() > 0) {
-    returnValue = sh 'returnStatus': true, 'script': "pytest $junitReportOption $pytestDirs"
+    returnValue = sh(
+            'returnStatus': true,
+            'script': "pytest $allureRportOption $junitReportOption $pytestDirs"
+    )
     if (returnValue != 0) {
       echo "pytest failed."
       success = false
