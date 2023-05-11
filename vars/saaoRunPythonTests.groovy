@@ -7,6 +7,11 @@ def call(Map config = [:] ) {
   def mypyDirs = _dirs(config, "mypy")
   def pytestDirs = _dirs(config, "pytest")
 
+  def junitReportOption = ''
+  if (config.containsKey('junit') && config.junit.length() > 0) {
+    junitReportOption = "--cov-report=xml:${config.junit}/coverage.xml --junitXml=${config.junit}/junit.xml"
+  }
+
   // Run bandit
   def success = true
   if (banditDirs.length() > 0) {
@@ -55,7 +60,7 @@ def call(Map config = [:] ) {
 
   // Run pytest
   if (pytestDirs.length() > 0) {
-    returnValue = sh 'returnStatus': true, 'script': "pytest $pytestDirs"
+    returnValue = sh 'returnStatus': true, 'script': "pytest $junitReportOption $pytestDirs"
     if (returnValue != 0) {
       echo "pytest failed."
       success = false
