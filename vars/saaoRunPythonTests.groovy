@@ -9,7 +9,7 @@ def call(Map config = [:] ) {
 
   def junitReportOption = ''
   if (config.containsKey('junit') && config.junit.length() > 0) {
-    junitReportOption = "--cov-report=xml:${config.junit}/coverage.xml --junitXml=${config.junit}/junit.xml"
+    junitReportOption = "--cov-report=xml:${config.junit}/coverage.xml --junitxml=${config.junit}/junit.xml"
   }
 
   // Run bandit
@@ -71,9 +71,7 @@ def call(Map config = [:] ) {
 }
 
 def _dirs(Map config, String key) {
-  print("KEY: $key ${config.get(key)}")
-  if (config.containsKey(key)) {
-    print("TYPE: ${config.get(key).getClass()}")
+  if (config.containsKey(key) && config.containsKey(key).length > 0) {
     return config.get(key).join(' ')
   }
   return ''
