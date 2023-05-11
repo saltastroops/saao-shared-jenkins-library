@@ -71,7 +71,7 @@ def call(Map config = [:] ) {
 }
 
 def _dirs(Map config, String key) {
-  print("KEY: $key")
+  print("KEY: $key ${config.get(key)}")
   if (config.containsKey(key) && config.get(key).length > 0) {
     return config.get(key).join(' ')
   }
