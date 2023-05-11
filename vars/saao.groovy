@@ -81,6 +81,9 @@ def runPythonTests(Map config = [:] ) {
     }
   }
 
+  // Stash changes
+  stash includes: 'reports/**', name: 'reports'
+
   return success
 }
 
