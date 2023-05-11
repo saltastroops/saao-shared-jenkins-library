@@ -69,7 +69,7 @@ def call(Map config = [:] ) {
   if (pytestDirs.length() > 0) {
     returnValue = sh(
             'returnStatus': true,
-            'script': "pytest $allureRportOption $junitReportOption $pytestDirs"
+            'script': "pytest $allureReportOption $junitReportOption $pytestDirs"
     )
     if (returnValue != 0) {
       echo "pytest failed."
