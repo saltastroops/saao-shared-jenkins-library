@@ -71,7 +71,7 @@ def call(Map config = [:] ) {
 }
 
 def _dirs(Map config, String key) {
-  if (config.containsKey(key) && config.containsKey(key).length > 0) {
+  if (config.containsKey(key) && config.containsKey(key) != []) {
     return config.get(key).join(' ')
   }
   return ''
