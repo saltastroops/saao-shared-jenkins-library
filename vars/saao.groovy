@@ -1,9 +1,9 @@
 import SaaoUtil
 
-rrr = [
-        'allure':[],
-        'warningsNextGeneration': []
-]
+//rrr = [
+//        'allure':[],
+//        'warningsNextGeneration': []
+//]
 
 def runPythonTests(Map config = [:] ) {
   env.spn = "YEBO!"
@@ -51,7 +51,7 @@ def runPythonTests(Map config = [:] ) {
   // Run flake8
   if (flake8Dirs.length() > 0) {
     if (wngFlake8Options != '') {
-      rrr.warningsNextGeneration.add('flake8')
+//      rrr.warningsNextGeneration.add('flake8')
     }
     returnValue = sh 'returnStatus': true, 'script': "flake8 $wngFlake8Options $flake8Dirs"
     if (returnValue != 0) {
@@ -72,7 +72,7 @@ def runPythonTests(Map config = [:] ) {
   // Run mypy
   if (mypyDirs.length() > 0) {
     if (wngMypyRedirection) {
-      rrr.warningsNextGeneration.add('mypy')
+//      rrr.warningsNextGeneration.add('mypy')
     }
     returnValue = sh 'returnStatus': true, 'script': "mypy $mypyDirs $wngMypyRedirection"
     if (returnValue != 0) {
@@ -84,7 +84,7 @@ def runPythonTests(Map config = [:] ) {
   // Run pytest
   if (pytestDirs.length() > 0) {
     of (allureOption != '') {
-      rrr.allure.add('pytest');
+//      rrr.allure.add('pytest');
     }
     returnValue = sh(
             'returnStatus': true,
@@ -104,7 +104,7 @@ def runPythonTests(Map config = [:] ) {
 
 def createPythonTestReports() {
   echo '----------------------------'
-  echo "${rrr.toString()}"
+  echo "${env.spn}"
   echo '----------------------------'
 }
 
