@@ -1,6 +1,6 @@
 import SaaoUtil
 
-def reportFilesGenerated = [
+def rrr = [
         'allure':[],
         'warningsNextGeneration': []
 ]
@@ -50,7 +50,7 @@ def runPythonTests(Map config = [:] ) {
   // Run flake8
   if (flake8Dirs.length() > 0) {
     if (wngFlake8Options != '') {
-      reportFilesGenerated.warningsNextGeneration.add('flake8')
+      rrr.warningsNextGeneration.add('flake8')
     }
     returnValue = sh 'returnStatus': true, 'script': "flake8 $wngFlake8Options $flake8Dirs"
     if (returnValue != 0) {
@@ -71,7 +71,7 @@ def runPythonTests(Map config = [:] ) {
   // Run mypy
   if (mypyDirs.length() > 0) {
     if (wngMypyRedirection) {
-      reportFilesGenerated.warningsNextGeneration.add('mypy')
+      rrr.warningsNextGeneration.add('mypy')
     }
     returnValue = sh 'returnStatus': true, 'script': "mypy $mypyDirs $wngMypyRedirection"
     if (returnValue != 0) {
@@ -83,7 +83,7 @@ def runPythonTests(Map config = [:] ) {
   // Run pytest
   if (pytestDirs.length() > 0) {
     of (allureOption != '') {
-      reportFilesGenerated.allure.add('pytest');
+      rrr.allure.add('pytest');
     }
     returnValue = sh(
             'returnStatus': true,
@@ -102,7 +102,7 @@ def runPythonTests(Map config = [:] ) {
 }
 
 def createPythonTestReports() {
-  echo reportFilesGenerated.toString()
+  echo rrr.toString()
 }
 
 def deployContainer(Map config = [:])
