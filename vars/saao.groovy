@@ -1,5 +1,10 @@
 import SaaoUtil
 
+def reportFilesGenerated = [
+        'allure':[],
+        'warningsNextGeneration': []
+]
+
 def runPythonTests(Map config = [:] ) {
   // Get the directories to test
   def banditDirs = _dirs(config, "bandit")
@@ -44,6 +49,9 @@ def runPythonTests(Map config = [:] ) {
 
   // Run flake8
   if (flake8Dirs.length() > 0) {
+    if (wngFlake8Options != '') {
+      reportFilesGenerated.warningsNextGeneration.add('flake8')
+    }
     returnValue = sh 'returnStatus': true, 'script': "flake8 $wngFlake8Options $flake8Dirs"
     if (returnValue != 0) {
       echo "flake8 failed."
@@ -62,6 +70,9 @@ def runPythonTests(Map config = [:] ) {
 
   // Run mypy
   if (mypyDirs.length() > 0) {
+    if (wngMypyRedirection) {
+      reportFilesGenerated.warningsNextGeneration.add('mypy')
+    }
     returnValue = sh 'returnStatus': true, 'script': "mypy $mypyDirs $wngMypyRedirection"
     if (returnValue != 0) {
       echo "mypy failed."
@@ -71,6 +82,9 @@ def runPythonTests(Map config = [:] ) {
 
   // Run pytest
   if (pytestDirs.length() > 0) {
+    of (allureOption != '') {
+      reportFilesGenerated.allure.add('pytest');
+    }
     returnValue = sh(
             'returnStatus': true,
             'script': "pytest $allureOption $pytestDirs"
@@ -85,6 +99,10 @@ def runPythonTests(Map config = [:] ) {
   stash includes: 'reports/**', name: 'reports'
 
   return success
+}
+
+def createPythonTestReports() {
+  echo reportFilesGenerated.toString()
 }
 
 def deployContainer(Map config = [:])
