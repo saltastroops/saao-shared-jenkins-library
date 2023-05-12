@@ -1,6 +1,6 @@
 import SaaoUtil
 
-def rrr = [
+rrr = [
         'allure':[],
         'warningsNextGeneration': []
 ]
@@ -8,29 +8,29 @@ def rrr = [
 def runPythonTests(Map config = [:] ) {
   env.spn = "YEBO!"
   // Get the directories to test
-  def banditDirs = _dirs(config, "bandit")
-  def blackDirs = _dirs(config, "black")
-  def flake8Dirs = _dirs(config, "flake8")
-  def isortDirs = _dirs(config, "isort")
-  def mypyDirs = _dirs(config, "mypy")
-  def pytestDirs = _dirs(config, "pytest")
+  banditDirs = _dirs(config, "bandit")
+  blackDirs = _dirs(config, "black")
+  flake8Dirs = _dirs(config, "flake8")
+  isortDirs = _dirs(config, "isort")
+  mypyDirs = _dirs(config, "mypy")
+  pytestDirs = _dirs(config, "pytest")
 
   // Get the Allure option
-  def allureOption = ''
+  allureOption = ''
   if (!config.containsKey('allure') || config.allure) {
     allureOption = "--alluredir=reports/allure";
   }
 
   // Get the Warnings Next Generation report options
-  def wngFlake8Options = ''
-  def wngMypyRedirection = ''
+  wngFlake8Options = ''
+  wngMypyRedirection = ''
   if (!config.containsKey('warningsNextGeneration') || config.warningsNextGeneration) {
     wngFlake8Options = "--format=pylint --output-file=reports/warnings-next-generation/flake8.txt"
     wngMypyRedirection = " | tee reports/warnings-next-generation/mypy.txt"
   }
 
   // Run bandit
-  def success = true
+  success = true
   if (banditDirs.length() > 0) {
     returnValue = sh 'returnStatus': true, 'script': "bandit -r $banditDirs"
     if (returnValue != 0) {
@@ -104,13 +104,13 @@ def runPythonTests(Map config = [:] ) {
 
 def createPythonTestReports() {
   echo '----------------------------'
-  echo "${env.spn}"
+  echo "${rrr.toString()}"
   echo '----------------------------'
 }
 
 def deployContainer(Map config = [:])
 {
-  def saaoUtil = new SaaoUtil(this)
+  saaoUtil = new SaaoUtil(this)
 
   // Ensure all required arguments are given
   String[] arguments = ["host",
@@ -145,7 +145,7 @@ def deployContainer(Map config = [:])
     }
 
     // Define the remote connection parameters
-    def remote = [:]
+    remote = [:]
     remote.name = config.host
     remote.host = config.host
     remote.allowAnyHosts = true
