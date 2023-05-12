@@ -7,6 +7,7 @@ import SaaoUtil
 
 def runPythonTests(Map config = [:] ) {
   env.spn = "YEBO!"
+  jsonSlurper = new JsonSlurper()
   // Get the directories to test
   banditDirs = _dirs(config, "bandit")
   blackDirs = _dirs(config, "black")
@@ -83,7 +84,7 @@ def runPythonTests(Map config = [:] ) {
 
   // Run pytest
   if (pytestDirs.length() > 0) {
-    of (allureOption != '') {
+    if (allureOption != '') {
 //      rrr.allure.add('pytest');
     }
     returnValue = sh(
