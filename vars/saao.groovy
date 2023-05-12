@@ -6,6 +6,7 @@ def rrr = [
 ]
 
 def runPythonTests(Map config = [:] ) {
+  env.spn = "YEBO!"
   // Get the directories to test
   def banditDirs = _dirs(config, "bandit")
   def blackDirs = _dirs(config, "black")
@@ -102,7 +103,9 @@ def runPythonTests(Map config = [:] ) {
 }
 
 def createPythonTestReports() {
-  echo rrr.toString()
+  echo '----------------------------'
+  echo "${env.spn}"
+  echo '----------------------------'
 }
 
 def deployContainer(Map config = [:])
