@@ -19,9 +19,11 @@ def runPythonTests(Map config = [:] ) {
 
   // Get the Warnings Next Generation report options
   wngFlake8Options = ''
+  wngFlake8Redirection = ''
   wngMypyRedirection = ''
   if (!config.containsKey('warningsNextGeneration') || config.warningsNextGeneration) {
     wngFlake8Options = '--format=pylint --output-file=reports/warnings-next-generation/flake8.txt'
+    wngFlake8Redirection = ' | tee reports/warnings-next-generation/flake8.txt'
     wngMypyRedirection = ' | tee reports/warnings-next-generation/mypy.txt'
   }
 
@@ -49,7 +51,7 @@ def runPythonTests(Map config = [:] ) {
     if (wngFlake8Options != '') {
       generatedReportFiles += 'warningsNextGeneration--flake8|'
     }
-    returnValue = sh 'returnStatus': true, 'script': "flake8 $wngFlake8Options $flake8Dirs"
+    returnValue = sh 'returnStatus': true, 'script': "flake8 $wngFlake8Options $flake8Dirs $wngFlake8Redirection"
     sh 'cat reports/warnings-next-generation/flake8.txt'
     if (returnValue != 0) {
       echo 'flake8 failed.'
