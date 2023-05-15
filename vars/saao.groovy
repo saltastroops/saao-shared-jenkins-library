@@ -104,14 +104,14 @@ def runPythonTests(Map config = [:] ) {
   stash includes: 'reports/**', name: 'reports'
   env.saaoGeneratedReportedFiles = generatedReportFiles
   env.saaoReportsDir = reportsDir
-  env.saaoRunPythonTestsRun = true
+  env.saaoRunPythonTestsRun = 'yes'
 
   return success
 }
 
 def generatePythonTestReports() {
   // Sanity check
-  if (env.saaoRunPythonTestsRun != true) {
+  if (env.saaoRunPythonTestsRun != null) {
     error 'The generatePythonTestReports step can only be executed after the runPytonTests step.'
   }
 
