@@ -1,33 +1,28 @@
 import SaaoUtil
 
-//rrr = [
-//        'allure':[],
-//        'warningsNextGeneration': []
-//]
-
 def runPythonTests(Map config = [:] ) {
-  env.spn = "YEBO!"
-  jsonSlurper = new JsonSlurper()
+  generatedReportFiles = ''
+
   // Get the directories to test
-  banditDirs = _dirs(config, "bandit")
-  blackDirs = _dirs(config, "black")
-  flake8Dirs = _dirs(config, "flake8")
-  isortDirs = _dirs(config, "isort")
-  mypyDirs = _dirs(config, "mypy")
-  pytestDirs = _dirs(config, "pytest")
+  banditDirs = _dirs(config, 'bandit')
+  blackDirs = _dirs(config, 'black')
+  flake8Dirs = _dirs(config, 'flake8')
+  isortDirs = _dirs(config, 'isort')
+  mypyDirs = _dirs(config, 'mypy')
+  pytestDirs = _dirs(config, 'pytest')
 
   // Get the Allure option
   allureOption = ''
   if (!config.containsKey('allure') || config.allure) {
-    allureOption = "--alluredir=reports/allure";
+    allureOption = '--alluredir=reports/allure';
   }
 
   // Get the Warnings Next Generation report options
   wngFlake8Options = ''
   wngMypyRedirection = ''
   if (!config.containsKey('warningsNextGeneration') || config.warningsNextGeneration) {
-    wngFlake8Options = "--format=pylint --output-file=reports/warnings-next-generation/flake8.txt"
-    wngMypyRedirection = " | tee reports/warnings-next-generation/mypy.txt"
+    wngFlake8Options = '--format=pylint --output-file=reports/warnings-next-generation/flake8.txt'
+    wngMypyRedirection = ' | tee reports/warnings-next-generation/mypy.txt'
   }
 
   // Run bandit
@@ -35,7 +30,7 @@ def runPythonTests(Map config = [:] ) {
   if (banditDirs.length() > 0) {
     returnValue = sh 'returnStatus': true, 'script': "bandit -r $banditDirs"
     if (returnValue != 0) {
-      echo "bandit failed."
+      echo 'bandit failed.'
       success = false
     }
   }
@@ -44,7 +39,7 @@ def runPythonTests(Map config = [:] ) {
   if (blackDirs.length() > 0) {
     returnValue = sh 'returnStatus': true, 'script': "black --check $blackDirs"
     if (returnValue != 0) {
-      echo "black failed."
+      echo 'black failed.'
       success = false
     }
   }
@@ -52,11 +47,11 @@ def runPythonTests(Map config = [:] ) {
   // Run flake8
   if (flake8Dirs.length() > 0) {
     if (wngFlake8Options != '') {
-//      rrr.warningsNextGeneration.add('flake8')
+      generatedReportFiles += 'warningsNextGeneration--flake8|'
     }
     returnValue = sh 'returnStatus': true, 'script': "flake8 $wngFlake8Options $flake8Dirs"
     if (returnValue != 0) {
-      echo "flake8 failed."
+      echo 'flake8 failed.'
       success = false
     }
   }
@@ -65,7 +60,7 @@ def runPythonTests(Map config = [:] ) {
   if (isortDirs.length() > 0) {
     returnValue = sh 'returnStatus': true, 'script': "isort --check-only $isortDirs"
     if (returnValue != 0) {
-      echo "isort failed."
+      echo 'isort failed.'
       success = false
     }
   }
@@ -73,11 +68,11 @@ def runPythonTests(Map config = [:] ) {
   // Run mypy
   if (mypyDirs.length() > 0) {
     if (wngMypyRedirection) {
-//      rrr.warningsNextGeneration.add('mypy')
+      generatedReportFiles += 'warningsNextGeneration--mypy|'
     }
     returnValue = sh 'returnStatus': true, 'script': "mypy $mypyDirs $wngMypyRedirection"
     if (returnValue != 0) {
-      echo "mypy failed."
+      echo 'mypy failed.'
       success = false
     }
   }
@@ -85,28 +80,38 @@ def runPythonTests(Map config = [:] ) {
   // Run pytest
   if (pytestDirs.length() > 0) {
     if (allureOption != '') {
-//      rrr.allure.add('pytest');
+      generatedReportFiles += 'allure--pytest|'
     }
     returnValue = sh(
             'returnStatus': true,
             'script': "pytest $allureOption $pytestDirs"
     )
     if (returnValue != 0) {
-      echo "pytest failed."
+      echo 'pytest failed.'
       success = false
     }
   }
 
-  // Stash changes
+  // Stash data needed later
   stash includes: 'reports/**', name: 'reports'
+  env.saaoGeneratedReportedFiles = generatedReportFiles
 
   return success
 }
 
 def createPythonTestReports() {
   echo '----------------------------'
-  echo "${env.spn}"
+  echo "${env.saaoGeneratedReportedFiles}"
   echo '----------------------------'
+  if (env.saaoGeneratedReportedFiles.contains('allure--pytest')) {
+    allure includeProperties: false, jdk: '', results: [[path: 'reports/allure']]
+  }
+  if (env.saaoGeneratedReportedFiles.contains('recordIssues(tools: [flake8(pattern: \'reports/warnings-next-generation/flake8.txt\'), myPy(pattern: \'reports/warnings-next-generation/mypy.txt\')])lake8')) {
+    recordIssues(tools: [flake8(pattern: 'reports/warnings-next-generation/flake8.txt')])
+  }
+  if (env.saaoGeneratedReportedFiles.contains('warnings-next-generation--mypy')) {
+    recordIssues(tools: [myPy(pattern: 'reports/warnings-next-generation/mypy.txt')])
+  }
 }
 
 def deployContainer(Map config = [:])
@@ -114,11 +119,11 @@ def deployContainer(Map config = [:])
   saaoUtil = new SaaoUtil(this)
 
   // Ensure all required arguments are given
-  String[] arguments = ["host",
-                        "hostCredentialsId",
-                        "imageName",
-                        "registryCredentialsId",
-                        "registryUrl"]
+  String[] arguments = ['host',
+                        'hostCredentialsId',
+                        'imageName',
+                        'registryCredentialsId',
+                        'registryUrl']
   for (String argument : arguments) {
     if (!config.containsKey(argument)) {
       error "The ${argument} argument is missing."
