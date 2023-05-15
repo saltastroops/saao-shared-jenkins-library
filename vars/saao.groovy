@@ -94,6 +94,7 @@ def runPythonTests(Map config = [:] ) {
             'returnStatus': true,
             'script': "pytest $allureOption $pytestDirs"
     )
+    echo "RETURNING... $returnValue"
     if (returnValue != 0) {
       echo 'pytest failed.'
       success = false
