@@ -244,6 +244,10 @@ saaoRunPythonTests 'black': ['src', 'tests']
 saaoRunPythonTests 'pytest': ['tests']
 ```
 
+### generateTestReports
+
+This is a convenience step for generating the Allure and Warnings Next Generation reports. You can only execute this step after the `runPythoinTests` step. These two steps may be run on different agents.
+
 ### deployContainer
 
 This function builds an image of the current directory, pushes the image to a registry and deploys a container to a server. More precisely, the following steps are carried out by the function.
