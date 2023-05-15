@@ -100,9 +100,10 @@ def runPythonTests(Map config = [:] ) {
 }
 
 def createPythonTestReports() {
-  echo '----------------------------'
-  echo "${env.saaoGeneratedReportedFiles}"
-  echo '----------------------------'
+  // Unstash the previously stashed report-elated files
+  unstash 'reports'
+
+  // Generate the requested reports
   if (env.saaoGeneratedReportedFiles.contains('allure--pytest')) {
     allure includeProperties: false, jdk: '', results: [[path: 'reports/allure']]
   }
