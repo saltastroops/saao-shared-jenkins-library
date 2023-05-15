@@ -102,7 +102,7 @@ def runPythonTests(Map config = [:] ) {
   }
 
   // Stash data needed later
-  stash includes: 'reports/**', name: 'reports'
+  stash includes: "$reportsDir/**", name: 'reports'
   env.saaoGeneratedReportedFiles = generatedReportFiles
   env.saaoReportsDir = reportsDir
   env.saaoRunPythonTestsRun = 'yes'
