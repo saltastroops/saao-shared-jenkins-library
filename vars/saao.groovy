@@ -103,7 +103,7 @@ def runPythonTests(Map config = [:] ) {
   // Stash data needed later
   stash includes: 'reports/**', name: 'reports'
   env.saaoGeneratedReportedFiles = generatedReportFiles
-  env.saaoReportsDor = reportsDir
+  env.saaoReportsDir = reportsDir
 
   return success
 }
