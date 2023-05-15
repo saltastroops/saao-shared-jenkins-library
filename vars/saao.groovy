@@ -13,7 +13,7 @@ def runPythonTests(Map config = [:] ) {
 
   // Get the  base directory for storing report-related files
   reportsDir = "reports"
-  if (config.contains('reportsDir')) {
+  if (config.containsKey('reportsDir')) {
     reportsDir = config.reportsDir
   }
 
