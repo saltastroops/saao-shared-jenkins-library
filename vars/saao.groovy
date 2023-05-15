@@ -106,7 +106,7 @@ def createPythonTestReports() {
   if (env.saaoGeneratedReportedFiles.contains('allure--pytest')) {
     allure includeProperties: false, jdk: '', results: [[path: 'reports/allure']]
   }
-  if (env.saaoGeneratedReportedFiles.contains('warningsNextGeneration--flake8') {
+  if (env.saaoGeneratedReportedFiles.contains('warningsNextGeneration--flake8')) {
     recordIssues(tools: [flake8(pattern: 'reports/warnings-next-generation/flake8.txt')])
   }
   if (env.saaoGeneratedReportedFiles.contains('warningsNextGeneration--mypy')) {
