@@ -50,6 +50,7 @@ def runPythonTests(Map config = [:] ) {
       generatedReportFiles += 'warningsNextGeneration--flake8|'
     }
     returnValue = sh 'returnStatus': true, 'script': "flake8 $wngFlake8Options $flake8Dirs"
+    sh 'cat reports/warnings-next-generation/flake8.txt'
     if (returnValue != 0) {
       echo 'flake8 failed.'
       success = false
