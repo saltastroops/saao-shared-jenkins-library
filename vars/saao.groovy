@@ -11,10 +11,16 @@ def runPythonTests(Map config = [:] ) {
   mypyDirs = _dirs(config, 'mypy')
   pytestDirs = _dirs(config, 'pytest')
 
+  // Get the  base directory for storing report-related files
+  reportsDir = "reports"
+  if (config.contains('reportsDir')) {
+    reportsDir = config.reportsDir
+  }
+
   // Get the Allure option
   allureOption = ''
   if (!config.containsKey('allure') || config.allure) {
-    allureOption = '--alluredir=reports/allure';
+    allureOption = "--alluredir=${reportsDir}/allure"
   }
 
   // Get the Warnings Next Generation report options
@@ -22,9 +28,9 @@ def runPythonTests(Map config = [:] ) {
   wngFlake8Redirection = ''
   wngMypyRedirection = ''
   if (!config.containsKey('warningsNextGeneration') || config.warningsNextGeneration) {
-    wngFlake8Options = '--format=pylint --output-file=reports/warnings-next-generation/flake8.txt'
-    wngFlake8Redirection = ' | tee reports/warnings-next-generation/flake8.txt'
-    wngMypyRedirection = ' | tee reports/warnings-next-generation/mypy.txt'
+    wngFlake8Options = "--format=pylint --output-file=${reportsDir}/warnings-next-generation/flake8.txt"
+    wngFlake8Redirection = " | tee ${reportsDir}/warnings-next-generation/flake8.txt"
+    wngMypyRedirection = " | tee ${reportsDir}/warnings-next-generation/mypy.txt"
   }
 
   // Run bandit
@@ -52,8 +58,7 @@ def runPythonTests(Map config = [:] ) {
       generatedReportFiles += 'warningsNextGeneration--flake8|'
     }
     returnValue = sh 'returnStatus': true, 'script': "flake8 $wngFlake8Options $flake8Dirs $wngFlake8Redirection"
-    sh 'cat reports/warnings-next-generation/flake8.txt'
-    if (returnValue != 0) {
+     if (returnValue != 0) {
       echo 'flake8 failed.'
       success = false
     }
@@ -98,23 +103,25 @@ def runPythonTests(Map config = [:] ) {
   // Stash data needed later
   stash includes: 'reports/**', name: 'reports'
   env.saaoGeneratedReportedFiles = generatedReportFiles
+  env.saaoReportsDor = reportsDir
 
   return success
 }
 
-def createPythonTestReports() {
-  // Unstash the previously stashed report-elated files
+def generatePythonTestReports() {
+  // Unstash the previously stashed report-related files
   unstash 'reports'
 
   // Generate the requested reports
+  reportsDir = env.saaoReportsDir
   if (env.saaoGeneratedReportedFiles.contains('allure--pytest')) {
-    allure includeProperties: false, jdk: '', results: [[path: 'reports/allure']]
+    allure includeProperties: false, jdk: '', results: [[path: "${reportsDir}/allure"]]
   }
   if (env.saaoGeneratedReportedFiles.contains('warningsNextGeneration--flake8')) {
-    recordIssues(tools: [flake8(pattern: 'reports/warnings-next-generation/flake8.txt')])
+    recordIssues(tools: [flake8(pattern: "${reportsDir}/warnings-next-generation/flake8.txt")])
   }
   if (env.saaoGeneratedReportedFiles.contains('warningsNextGeneration--mypy')) {
-    recordIssues(tools: [myPy(pattern: 'reports/warnings-next-generation/mypy.txt')])
+    recordIssues(tools: [myPy(pattern: "${reportsDir}/warnings-next-generation/mypy.txt")])
   }
 }
 
