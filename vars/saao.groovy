@@ -14,7 +14,7 @@ def runPythonTests(Map config = [:] ) {
   // Get the  base directory for storing report-related files
   reportsDir = "reports"
   if (config.containsKey('reportsDir')) {
-    reportsDir = config.reportsDir
+    reportsDir = config.reportsDir.replaceAll(/\/+/, "/").replaceAll(/\/$/, "")
   }
 
   // Get the Allure option
