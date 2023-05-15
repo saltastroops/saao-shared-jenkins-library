@@ -111,7 +111,7 @@ def runPythonTests(Map config = [:] ) {
 
 def generatePythonTestReports() {
   // Sanity check
-  if (env.saaoRunPythonTestsRun != null) {
+  if (env.saaoRunPythonTestsRun == null) {
     error 'The generatePythonTestReports step can only be executed after the runPytonTests step.'
   }
 
