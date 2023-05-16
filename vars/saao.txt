@@ -1,0 +1,102 @@
+<div class="help" style="display: block">
+
+<p>The `saao` variable provides various utility steps for SAAO projects. See the <a href="https://github.com/saltastroops/saao-shared-jenkins-library">documentation</a> for more details.</p>
+
+<h3><code>deployContainer</code></h3>
+
+<p>Builds a Docker image, pushes it to a container registry and deploys a container for it.</p>
+
+<p>A map with the following values must be passed to the function.</p>
+
+<dl>
+  <dt><code>host</code></dt>
+  <dd>The deployment server. An example value would be `dev.example.com`.</dd>
+
+  <dt><code>hostCredentialsId</code></dt>
+  <dd>The identifier of the SSH username and private key credentials for the deployment server.</dd>
+
+  <dt><code>imageName</code></dt>
+  <dd>The name of the Docker image. This will also be used as the name of the folder used for the deployment on the deployment server.</dd>
+
+  <dt><code>registryCredentialsId</code></dt>
+  <dd>The identifier of the username and password credentials for the container registry.</dd>
+
+  <dt><code>registryUrl</code></dt>
+  <dd>The URL of the container registry. An example value would be `https://registry.example.com`.</dd>
+
+  <dt><code>secretFiles</code> (optional)</dt>
+  <dd>A map of identifiers of secret file credentials and file paths. Each secret file will be copied to the corresponding file path on the deployment server. An example value would be `['my-great-webapp-env': '.env']`. In this example a file `.env` would be created on the deployment server.</dd>
+</dl>
+
+<h3><code>generatePythonTestReports</code></h3>
+
+A convenience step for generating the Allure and Warnings Next Generation reports. You can only execute this step after the `runPythonTests` step. These two steps may be run on different agents.
+
+<code>generatePythonTestReports</code> takes no arguments.
+
+<h3><code>runPythonTests</code></h3>
+
+<p>Lets you run the following tools for linting and testing Python code:</p>
+
+<ul>
+<li>bandit</li>
+<li>black</li>
+<li>flake8</li>
+<li>isort</li>
+<li>mypy</li>
+<li>pytest</li>
+</ul>
+
+<p>It also lets you generate test reports for Allure, JUnit and Warnings Next Generation.</p>
+
+<p>The following optional arguments may be passed as a map to configure the tools for running checks.</p>
+
+<dl>
+<dt>`bandit`</dt>
+<dd>The list of paths to check with bandit.
+<dt>`black`</dt>
+<dd>The list of paths to check with black.
+<dt>`flake8`</dt>
+<dd>The list of paths to check with flake8.
+<dt>`isort`</dt>
+<dd>The list of paths to check with isort.
+<dt>`mypy`</dt>
+<dd>The list of paths to check with mypy.
+<dt>`pytest`</dt>
+<dd>The list of paths to check with pytest.
+</dl>
+
+<p>The list of paths must be passed as a list of strings. For example, if you want to
+check the paths `src` and `tests`, you would pass `['src', 'tests']`. All the keys are
+optional; a test is only run if the corresponding key is included and its value is not
+an empty list.
+
+<p>You can also pass optional arguments for configuring the report files generation.</p>
+
+<dl>
+<dt>`allure`</dt>
+<dd>Whether to create files for Allure. The default is <code>true</code>.</dd>
+<dt>`reportsDir`</dt>
+<dd>The directory (relative to the workspace) in which to store the files for generating reports. The default is `'reports'`.</dd>
+<dt>`warnings_next_generation`</dt>
+<dd>Whether to create files for Warnings Next Generation. The default is <code>true</code>.</dd>
+</dl>
+
+<p>Allure and Warnings Next Generation reports are only generated if the corresponding argument is included and its value is not an empty string.</p>
+
+In the following example only black, flake8 and pytest are run, and only reports for Allure are generated:</p>
+
+<pre>
+saaoRunPythonTests(
+  'bandit': [],
+  'black': ['src', 'tests'],
+  'flake8': ['src', 'tests'],
+  'pytest': ['tests'],
+  'warningsNextGeneration': false
+)
+</pre>
+
+<p>The step returns <code>true</code> if all tests pass, and <code>false</code>
+otherwise.</p>
+
+</div>

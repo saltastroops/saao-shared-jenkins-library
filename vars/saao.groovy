@@ -94,7 +94,6 @@ def runPythonTests(Map config = [:] ) {
             'returnStatus': true,
             'script': "pytest $allureOption $pytestDirs"
     )
-    echo "RETURNING... $returnValue"
     if (returnValue != 0) {
       echo 'pytest failed.'
       success = false
@@ -106,14 +105,12 @@ def runPythonTests(Map config = [:] ) {
   env.saaoGeneratedReportedFiles = generatedReportFiles
   env.saaoReportsDir = reportsDir
   env.saaoRunPythonTestsRun = 'yes'
-  echo "E1: ${env.saaoRunPythonTestsRun}"
 
   return success
 }
 
 def generatePythonTestReports() {
   // Sanity check
-  echo "E2: ${env.saaoRunPythonTestsRun}"
   if (env.saaoRunPythonTestsRun == null) {
     error 'The generatePythonTestReports step can only be executed after the runPytonTests step.'
   }
