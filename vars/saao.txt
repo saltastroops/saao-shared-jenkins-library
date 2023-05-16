@@ -1,6 +1,6 @@
 <div class="help" style="display: block">
 
-<p>The `saao` variable provides various utility steps for SAAO projects. See the <a href="https://github.com/saltastroops/saao-shared-jenkins-library">documentation</a> for more details.</p>
+<p>The <code>saao</code> variable provides various utility steps for SAAO projects. See the <a href="https://github.com/saltastroops/saao-shared-jenkins-library">documentation</a> for more details.</p>
 
 <p><strong><em><code>deployContainer</code></em></strong></p>
 
@@ -32,7 +32,7 @@
 
 <p>A convenience step for generating the Allure and Warnings Next Generation reports. You can only execute this step after the <code>runPythonTests</code> step.</p>
 
-<p><code>generatePythonTestReports</code> takes no arguments.</p>
+<p>This step takes no arguments.</p>
 
 <p><strong><em><code>runPythonTests</code></em></strong></p>
 
@@ -47,7 +47,10 @@
 <li>pytest</li>
 </ul>
 
-<p>It also lets you generate test reports for Allure and Warnings Next Generation.</p>
+<p>It also lets you generate the files for Allure and Warnings Next Generation
+test reports. In order to generate the test reports themselves you have to use the
+<code>generatePythonTestReports</code> (or the <code>allure</code> and
+<code>recordIssues</code> step)</p>
 
 <p>The following optional arguments may be passed as a map to configure the tools for running checks.</p>
 
