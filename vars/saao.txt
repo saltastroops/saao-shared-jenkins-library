@@ -1,0 +1,103 @@
+<div class="help" style="display: block">
+
+<p>The <code>saao</code> variable provides various utility steps for SAAO projects. See the <a href="https://github.com/saltastroops/saao-shared-jenkins-library">documentation</a> for more details.</p>
+
+<p><strong><em><code>deployContainer</code></em></strong></p>
+
+<p>Builds a Docker image, pushes it to a container registry and deploys a container for it.</p>
+
+<p>A map with the following arguments must be passed to the function.</p>
+
+<dl>
+  <dt><code>host</code></dt>
+  <dd>The deployment server. An example value would be <code>dev.example.com</code>.</dd>
+
+  <dt><code>hostCredentialsId</code></dt>
+  <dd>The identifier of the SSH username and private key credentials for the deployment server.</dd>
+
+  <dt><code>imageName</code></dt>
+  <dd>The name of the Docker image. This will also be used as the name of the folder for the deployment on the deployment server.</dd>
+
+  <dt><code>registryCredentialsId</code></dt>
+  <dd>The identifier of the username and password credentials for the container registry.</dd>
+
+  <dt><code>registryUrl</code></dt>
+  <dd>The URL of the container registry. An example value would be <code>https://registry.example.com</code>.</dd>
+
+  <dt><code>secretFiles</code> (optional)</dt>
+  <dd>A map of identifiers of secret file credentials and file paths. Each secret file will be copied to the corresponding file path on the deployment server. An example value would be <code>['my-great-webapp-env': '.env']</code>. In this example a file <code>.env</code> would be created on the deployment server.</dd>
+</dl>
+
+<p><strong><em><code>generatePythonTestReports</code></em></strong></p>
+
+<p>A convenience step for generating the Allure and Warnings Next Generation reports. You can only execute this step after the <code>runPythonTests</code> step.</p>
+
+<p>This step takes no arguments.</p>
+
+<p><strong><em><code>runPythonTests</code></em></strong></p>
+
+<p>Lets you run the following tools for linting and testing Python code:</p>
+
+<ul>
+<li>bandit</li>
+<li>black</li>
+<li>flake8</li>
+<li>isort</li>
+<li>mypy</li>
+<li>pytest</li>
+</ul>
+
+<p>It also lets you generate the files for Allure and Warnings Next Generation
+test reports. In order to generate the test reports themselves you have to use the
+<code>generatePythonTestReports</code> (or the <code>allure</code> and
+<code>recordIssues</code> step)</p>
+
+<p>The following optional arguments may be passed as a map to configure the tools for running checks.</p>
+
+<dl>
+<dt><code>bandit</code></dt>
+<dd>The list of paths to check with bandit.
+<dt><code>black</code></dt>
+<dd>The list of paths to check with black.
+<dt><code>flake8</code></dt>
+<dd>The list of paths to check with flake8.
+<dt><code>isort</code></dt>
+<dd>The list of paths to check with isort.
+<dt><code>mypy</code></dt>
+<dd>The list of paths to check with mypy.
+<dt><code>pytest</code></dt>
+<dd>The list of paths to check with pytest.
+</dl>
+
+<p>The list of paths must be passed as a list of strings. For example, if you want to
+check the paths <code>src</code> and <code>tests</code>, you would pass <code>['src', 'tests']</code>. All the arguments are
+optional; a test is only run if the corresponding argument is included and is not
+an empty list.
+
+<p>You can also pass optional arguments for configuring the report file generation.</p>
+
+<dl>
+<dt><code>allure</code></dt>
+<dd>Whether to create files for Allure. The default is <code>true</code>.</dd>
+<dt><code>reportsDir</code></dt>
+<dd>The directory (relative to the workspace) in which to store the files for generating reports. The default is <code>'reports'</code>.</dd>
+<dt><code>warnings_next_generation</code></dt>
+<dd>Whether to create files for Warnings Next Generation. The default is <code>true</code>.</dd>
+</dl>
+
+<p>In the following example only black, flake8 and pytest are run, and only reports for Allure are generated:</p>
+
+<pre>
+saaoRunPythonTests(
+  'bandit': [],
+  'black': ['src', 'tests'],
+  'flake8': ['src', 'tests'],
+  'pytest': ['tests'],
+  'warningsNextGeneration': false
+)
+</pre>
+
+<p>The step returns <code>true</code> if all tests pass, and <code>false</code>
+otherwise.</p>
+
+</div>
