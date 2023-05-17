@@ -9,10 +9,10 @@
 <p>A map with the following arguments must be passed to the function.</p>
 
 <dl>
-  <dt><code>dockerFile</code></dt>
+  <dt><code>dockerFile</code> (optional)</dt>
   <dd>The path of the Dockerfile to use for building the image. The default is <code>'Dockerfile'</code>.
 
-  <dt><code>dockerComposeFile</code></dt>
+  <dt><code>dockerComposeFile</code> (optional)</dt>
   <dd>The path of the docker compose file to use for deploying. The default is <code>'docker-compose.yml'</code>.</dd>
 
   <dt><code>host</code></dt>
