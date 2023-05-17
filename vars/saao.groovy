@@ -136,15 +136,21 @@ def deployContainer(Map config = [:])
   saaoUtil = new SaaoUtil(this)
 
   // Ensure all required arguments are given
-  String[] arguments = ['host',
+  String[] requiredArguments = ['host',
                         'hostCredentialsId',
                         'imageName',
                         'registryCredentialsId',
                         'registryUrl']
-  for (String argument : arguments) {
+  for (String argument : requiredArguments) {
     if (!config.containsKey(argument)) {
       error "The ${argument} argument is missing."
     }
+  }
+  if (!config.containsKey('dockerFile')) {
+    config.dockerFile = 'Dockerfile'
+  }
+  if (!config.containsKey('dockerComposeFile')) {
+    config.dockerFile = 'docker-compose.yml'
   }
   if (!config.containsKey('secretFiles')) {
     config.secretFiles = []
@@ -160,7 +166,10 @@ def deployContainer(Map config = [:])
                                      keyFileVariable: 'identity',
                                      usernameVariable: 'username')]) {
     // Build the Docker image
-    dockerImage = docker.build("${registryUsername}/${config.imageName}:${tag}")
+    dockerImage = docker.build(
+            "${registryUsername}/${config.imageName}:${tag}",
+            "-f ${config.dockerFile} ."
+    )
 
     // Push the image to the container registry
     docker.withRegistry(config.registryUrl, config.registryCredentialsId) {
@@ -181,7 +190,10 @@ def deployContainer(Map config = [:])
 
     // Prepare the docker compose file
     saaoUtil.loadScript 'prepare_docker_compose.sh'
-    def compose_file = sh returnStdout: true, script: "./prepare_docker_compose.sh \"${config.registryUrl}\" \"${registryUsername}\" \"${config.imageName}\" \"${tag}\""
+    def compose_file = sh(
+            returnStdout: true,
+            script: "./prepare_docker_compose.sh \"${config.dockerComposeFile}\" \"${config.registryUrl}\" \"${registryUsername}\" \"${config.imageName}\" \"${tag}\""
+    )
     writeFile file: '_docker-compose.yml', text: "$compose_file"
 
     // Get the deployment script
