@@ -150,7 +150,7 @@ def deployContainer(Map config = [:])
     config.dockerFile = 'Dockerfile'
   }
   if (!config.containsKey('dockerComposeFile')) {
-    config.dockerFile = 'docker-compose.yml'
+    config.dockerComposeFile = 'docker-compose.yml'
   }
   if (!config.containsKey('secretFiles')) {
     config.secretFiles = []
