@@ -60,6 +60,7 @@ def runPythonTests(Map config = [:] ) {
             'returnStatus': true,
             'script': """
 #!/bin/bash
+echo $SHELL
 set -o pipeline
 ruff $wngRuffOptions $ruffDirs $wngRuffRedirection
 set +o pipeline
@@ -81,6 +82,7 @@ set +o pipeline
             'returnStatus': true,
             'script': """
 #!/bin/bash
+echo $SHELL
 set -o pipefail
 mypy $mypyDirs $wngMypyRedirection
 set +o pipefail      
