@@ -53,7 +53,7 @@ def runPythonTests(Map config = [:] ) {
 
   // Run Ruff
   if (ruffDirs.length() > 0) {
-    if (wngRuffOption != '') {
+    if (wngRuffFile != '') {
       generatedReportFiles += 'warningsNextGeneration--ruff|'
     }
     script = "ruff $wngRuffOption $ruffDirs"
@@ -65,28 +65,26 @@ def runPythonTests(Map config = [:] ) {
       sh "cat $wngRuffFile"
     }
      if (returnValue != 0) {
-      echo 'ruff failed.'
+      echo 'Ruff failed.'
       success = false
     }
   }
 
   // Run Mypy
   if (mypyDirs.length() > 0) {
-    if (wngMypyRedirection) {
+    if (wngMypyFile != '') {
       generatedReportFiles += 'warningsNextGeneration--mypy|'
     }
-    returnValue = sh(
-            'returnStatus': true,
-            'script': """
-#!/bin/bash
-echo $SHELL
-set -o pipefail
-mypy $mypyDirs $wngMypyRedirection
-set +o pipefail      
-"""
-    )
+    script = "mypy $mypyDirs"
+    if (wngMypyFile != '') {
+      script += "> $wngMypyFile"
+    }
+    returnValue = sh returnStatus: true, script: script
+    if (wngMypyFile != '') {
+      sh "cat $wngMypyFile"
+    }
     if (returnValue != 0) {
-      echo 'mypy failed.'
+      echo 'Mypy failed.'
       success = false
     }
   }
