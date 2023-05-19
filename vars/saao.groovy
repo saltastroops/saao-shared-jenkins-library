@@ -28,7 +28,7 @@ def runPythonTests(Map config = [:] ) {
   wngFlake8Redirection = ''
   wngMypyRedirection = ''
   if (!config.containsKey('warningsNextGeneration') || config.warningsNextGeneration) {
-    wngFlake8Options = "--format=pylint --output-file=${reportsDir}/warnings-next-generation/flake8.txt"
+    wngFlake8Options = "--format=pylint"
     wngFlake8Redirection = " | tee ${reportsDir}/warnings-next-generation/flake8.txt"
     wngMypyRedirection = " | tee ${reportsDir}/warnings-next-generation/mypy.txt"
   }
