@@ -56,7 +56,14 @@ def runPythonTests(Map config = [:] ) {
     if (wngRuffOptions != '') {
       generatedReportFiles += 'warningsNextGeneration--ruff|'
     }
-    returnValue = sh 'returnStatus': true, 'script': "ruff $wngRuffOptions $ruffDirs $wngRuffRedirection"
+    returnValue = sh(
+            'returnStatus': true,
+            'script': """
+set -o pipeline
+ruff $wngRuffOptions $ruffDirs $wngRuffRedirection
+set +o pipeline
+"""
+    )
      if (returnValue != 0) {
       echo 'ruff failed.'
       success = false
@@ -68,7 +75,14 @@ def runPythonTests(Map config = [:] ) {
     if (wngMypyRedirection) {
       generatedReportFiles += 'warningsNextGeneration--mypy|'
     }
-    returnValue = sh 'returnStatus': true, 'script': "mypy $mypyDirs $wngMypyRedirection"
+    returnValue = sh(
+            'returnStatus': true,
+            'script': """
+set -o pipefail
+mypy $mypyDirs $wngMypyRedirection
+set +o pipefail      
+"""
+    )
     if (returnValue != 0) {
       echo 'mypy failed.'
       success = false
