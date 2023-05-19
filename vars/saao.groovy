@@ -68,6 +68,7 @@ set +o pipeline
       echo 'ruff failed.'
       success = false
     }
+    sh "cat ${reportsDir}/warnings-next-generation/ruff.txt"
   }
 
   // Run Mypy
