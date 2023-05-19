@@ -62,6 +62,8 @@ def runPythonTests(Map config = [:] ) {
     }
     returnValue = sh returnStatus: true, script: script
     if (wngRuffFile != '') {
+      // As the output was redirected, the warnings weren't shown in the log when Ruff
+      // ran; but it might be helpful to show them
       sh "cat $wngRuffFile"
     }
      if (returnValue != 0) {
@@ -81,6 +83,8 @@ def runPythonTests(Map config = [:] ) {
     }
     returnValue = sh returnStatus: true, script: script
     if (wngMypyFile != '') {
+      // As the output was redirected, the warnings weren't shown in the log when Mypy
+      // ran; but it might be helpful to show them
       sh "cat $wngMypyFile"
     }
     if (returnValue != 0) {
