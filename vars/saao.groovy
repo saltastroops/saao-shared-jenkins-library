@@ -59,7 +59,7 @@ def runPythonTests(Map config = [:] ) {
     returnValue = sh(
             'returnStatus': true,
             'script': """
-#!/bin/bash
+#!/usr/bin/env bash
 echo $SHELL
 set -o pipeline
 ruff $wngRuffOptions $ruffDirs $wngRuffRedirection
