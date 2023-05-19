@@ -23,13 +23,13 @@ def runPythonTests(Map config = [:] ) {
   }
 
   // Get the Warnings Next Generation report options
-  wngRuffOptions = ''
-  wngRuffRedirection = ''
-  wngMypyRedirection = ''
+  wngRuffOption = ''
+  wngRuffFile = ''
+  wngMypyFile = ''
   if (!config.containsKey('warningsNextGeneration') || config.warningsNextGeneration) {
-    wngRuffOptions = "--format=pylint"
-    wngRuffRedirection = " | tee ${reportsDir}/warnings-next-generation/ruff.txt"
-    wngMypyRedirection = " | tee ${reportsDir}/warnings-next-generation/mypy.txt"
+    wngRuffOption = "--format=pylint"
+    wngRuffFile = "${reportsDir}/warnings-next-generation/ruff.txt"
+    wngMypyFile = "${reportsDir}/warnings-next-generation/mypy.txt"
   }
 
   // Run Bandit
@@ -53,24 +53,21 @@ def runPythonTests(Map config = [:] ) {
 
   // Run Ruff
   if (ruffDirs.length() > 0) {
-    if (wngRuffOptions != '') {
+    if (wngRuffOption != '') {
       generatedReportFiles += 'warningsNextGeneration--ruff|'
     }
-    returnValue = sh(
-            'returnStatus': true,
-            'script': """
-#!/usr/bin/env bash
-echo $SHELL
-set -o pipeline
-ruff $wngRuffOptions $ruffDirs $wngRuffRedirection
-set +o pipeline
-"""
-    )
+    script = "ruff $wngRuffOptions $ruffDirs"
+    if (wngRuffFile != '') {
+      script += "> $wngRuffFile"
+    }
+    returnValue = sh returnStatus: true, script: script
+    if (wngRuffFile != '') {
+      sh "cat $wngRuffFile"
+    }
      if (returnValue != 0) {
       echo 'ruff failed.'
       success = false
     }
-    sh "cat ${reportsDir}/warnings-next-generation/ruff.txt"
   }
 
   // Run Mypy
