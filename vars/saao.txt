@@ -45,11 +45,10 @@
 <p>Lets you run the following tools for linting and testing Python code:</p>
 
 <ul>
-<li>bandit</li>
-<li>black</li>
-<li>flake8</li>
-<li>isort</li>
-<li>mypy</li>
+<li>Bandit</li>
+<li>Black</li>
+<li>Ruff</li>
+<li>Mypy</li>
 <li>pytest</li>
 </ul>
 
@@ -62,15 +61,13 @@ test reports. In order to generate the test reports themselves you have to use t
 
 <dl>
 <dt><code>bandit</code></dt>
-<dd>The list of paths to check with bandit.
+<dd>The list of paths to check with Bandit.
 <dt><code>black</code></dt>
-<dd>The list of paths to check with black.
-<dt><code>flake8</code></dt>
-<dd>The list of paths to check with flake8.
-<dt><code>isort</code></dt>
-<dd>The list of paths to check with isort.
+<dd>The list of paths to check with Black.
+<dt><code>ruff</code></dt>
+<dd>The list of paths to check with Ruff.
 <dt><code>mypy</code></dt>
-<dd>The list of paths to check with mypy.
+<dd>The list of paths to check with Mypy.
 <dt><code>pytest</code></dt>
 <dd>The list of paths to check with pytest.
 </dl>
@@ -91,13 +88,13 @@ an empty list.
 <dd>Whether to create files for Warnings Next Generation. The default is <code>true</code>.</dd>
 </dl>
 
-<p>In the following example only black, flake8 and pytest are run, and only reports for Allure are generated:</p>
+<p>In the following example only Black, Ruff and pytest are run, and only reports for Allure are generated:</p>
 
 <pre>
 saaoRunPythonTests(
   'bandit': [],
   'black': ['src', 'tests'],
-  'flake8': ['src', 'tests'],
+  'ruff': ['src', 'tests'],
   'pytest': ['tests'],
   'warningsNextGeneration': false
 )

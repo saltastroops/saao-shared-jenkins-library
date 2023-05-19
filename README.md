@@ -130,7 +130,7 @@ However, `runPythonTests` does *not* generate the actual report. For this you ne
 
 ### Warnings Next Generation
 
-By default, `runPythonTests` creates the necessary files for Warnings Next Generation reports whenever it runs `flake8` or `mypy`. (You can disable this by passing the `flake8` or `mypy` argument with the value `false`.)
+By default, `runPythonTests` creates the necessary files for Warnings Next Generation reports whenever it runs Ruff or Mypy. (You can disable this by passing the `ruff` or `mypy` argument with the value `false`.)
 
 The report files are created in a folder `reports` in the workspace. If you require a different folder, you can specify it with the `reportsDir` argument.
 
@@ -142,11 +142,10 @@ However, `runPythonTests` does *not* generate the actual reports. For this you n
 
 This function can be used to run the following Python tools for testing:
 
-* bandit
-* black
-* flake8
-* isort
-* mypy
+* Bandit
+* Black
+* Ruff
+* Mypy
 * pytest
 
 It requires Python and the various tools to be available on the agent on which the job is run. The best way to ensure this is to use a Docker agent with a Dockerfile supplied by your project.
@@ -161,7 +160,7 @@ RUN apt-get update -y
 RUN curl -sSL https://install.python-poetry.org | POETRY_HOME=/usr/local python3 -
 
 RUN pip install wheel
-RUN pip install allure-pytest bandit black flake8 isort mypy pytest
+RUN pip install allure-pytest bandit black mypy pytest ruff
 ```
 
 This file installs Python 3.10 and all the required libraries. It also installs Poetry, which is *not* required for `runPythonTests` but might be used by your project.
@@ -198,16 +197,15 @@ The `args` string passed to `dockerfile` adds a Docker volume for caching the in
 
 | Argument | Required? | Explanation                 | Example value      |
 |----------|-----------|-----------------------------|--------------------|
-| bandit   | No        | Paths to check with bandit. | `['src']`          |
-| black    | No        | Paths to check with black.  | `['src', 'tests']` |
-| flake8   | No        | Paths to check with flake8. | `['src', 'tests']` |
-| isort    | No        | Paths to check with isort.  | `['src', 'tests']` |
-| mypy     | No        | Paths to check with mypy.   | `['src', 'tests']` |
+| bandit   | No        | Paths to check with Bandit. | `['src']`          |
+| black    | No        | Paths to check with Black.  | `['src', 'tests']` |
+| ruff     | No        | Paths to check with Ruff.   | `['src', 'tests']` |
+| mypy     | No        | Paths to check with Mypy.   | `['src', 'tests']` |
 | pytest   | No        | Paths to check with pytest. | `['tests']`        |
 
 A check is only performed if the corresponding argument is included and its value is not an empty list.
 
-By default `saaoRunPythonTests` generates the necessary files for Allure in a folder `reports/allure` whenever it runs pytest, and the necessary files for Warnings Next Generation in a folder `reports/warnings-next-generation` whenever it runs flake8 or mypy. You may configure this by passing the following arguments.
+By default `saaoRunPythonTests` generates the necessary files for Allure in a folder `reports/allure` whenever it runs pytest, and the necessary files for Warnings Next Generation in a folder `reports/warnings-next-generation` whenever it runs Ruff or Mypy. You may configure this by passing the following arguments.
 
 | Argument               | Required? | Explanation                                                                           | Example value         |
 |------------------------|-----------|---------------------------------------------------------------------------------------|-----------------------|
@@ -215,10 +213,10 @@ By default `saaoRunPythonTests` generates the necessary files for Allure in a fo
 | reportsDir             | No        | The folder in which to put the created report files. The default is `'reports'`.      | `'generated-reports'` |
 | warningsNextGeneration | No        | Whether to generate report files for Warnings Next Generation. The default is `true`. | `false`               |
 
-As an example, the following call runs black and mypy on the `src` and `tests` folder and pytest on the `tests` folder, but runs no other tools. It creates report files for Allure, but no files for Warnings Next Generation.
+As an example, the following call runs Black and Mypy on the `src` and `tests` folder and pytest on the `tests` folder, but runs no other tools. It creates report files for Allure, but no files for Warnings Next Generation.
 
 ```groovy
-saao.runPythonTests 'black': ['src', 'tests'], 'flake8': ['src', 'tests'], 'pytest': ['tests'], 'warningsNextGeneration': false
+saao.runPythonTests 'black': ['src', 'tests'], 'mypy': ['src', 'tests'], 'pytest': ['tests'], 'warningsNextGeneration': false
 ```
 
 While `runPythonTests` creates the necessary files, it does not generate the actual reports. However, in most cases you can generate the reports by just using the `generatePythonTestReports` step inside a `script` step. Note that you cannot do this on a Docker agent as Allure won't work on such an agent.
