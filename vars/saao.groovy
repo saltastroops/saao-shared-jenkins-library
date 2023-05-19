@@ -56,7 +56,7 @@ def runPythonTests(Map config = [:] ) {
     if (wngRuffOption != '') {
       generatedReportFiles += 'warningsNextGeneration--ruff|'
     }
-    script = "ruff $wngRuffOptions $ruffDirs"
+    script = "ruff $wngRuffOption $ruffDirs"
     if (wngRuffFile != '') {
       script += "> $wngRuffFile"
     }
