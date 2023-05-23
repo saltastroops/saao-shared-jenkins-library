@@ -6,8 +6,7 @@ def runPythonTests(Map config = [:] ) {
   // Get the directories to test
   banditDirs = _dirs(config, 'bandit')
   blackDirs = _dirs(config, 'black')
-  flake8Dirs = _dirs(config, 'flake8')
-  isortDirs = _dirs(config, 'isort')
+  ruffDirs = _dirs(config, 'ruff')
   mypyDirs = _dirs(config, 'mypy')
   pytestDirs = _dirs(config, 'pytest')
 
@@ -24,16 +23,16 @@ def runPythonTests(Map config = [:] ) {
   }
 
   // Get the Warnings Next Generation report options
-  wngFlake8Options = ''
-  wngFlake8Redirection = ''
-  wngMypyRedirection = ''
+  wngRuffOption = ''
+  wngRuffFile = ''
+  wngMypyFile = ''
   if (!config.containsKey('warningsNextGeneration') || config.warningsNextGeneration) {
-    wngFlake8Options = "--format=pylint --output-file=${reportsDir}/warnings-next-generation/flake8.txt"
-    wngFlake8Redirection = " | tee ${reportsDir}/warnings-next-generation/flake8.txt"
-    wngMypyRedirection = " | tee ${reportsDir}/warnings-next-generation/mypy.txt"
+    wngRuffOption = "--format=pylint"
+    wngRuffFile = "${reportsDir}/warnings-next-generation/ruff.txt"
+    wngMypyFile = "${reportsDir}/warnings-next-generation/mypy.txt"
   }
 
-  // Run bandit
+  // Run Bandit
   success = true
   if (banditDirs.length() > 0) {
     returnValue = sh 'returnStatus': true, 'script': "bandit -r $banditDirs"
@@ -43,7 +42,7 @@ def runPythonTests(Map config = [:] ) {
     }
   }
 
-  // Run black
+  // Run Black
   if (blackDirs.length() > 0) {
     returnValue = sh 'returnStatus': true, 'script': "black --check $blackDirs"
     if (returnValue != 0) {
@@ -52,35 +51,44 @@ def runPythonTests(Map config = [:] ) {
     }
   }
 
-  // Run flake8
-  if (flake8Dirs.length() > 0) {
-    if (wngFlake8Options != '') {
-      generatedReportFiles += 'warningsNextGeneration--flake8|'
+  // Run Ruff
+  if (ruffDirs.length() > 0) {
+    if (wngRuffFile != '') {
+      generatedReportFiles += 'warningsNextGeneration--ruff|'
     }
-    returnValue = sh 'returnStatus': true, 'script': "flake8 $wngFlake8Options $flake8Dirs $wngFlake8Redirection"
+    script = "ruff $wngRuffOption $ruffDirs"
+    if (wngRuffFile != '') {
+      script += "> $wngRuffFile"
+    }
+    returnValue = sh returnStatus: true, script: script
+    if (wngRuffFile != '') {
+      // As the output was redirected, the warnings weren't shown in the log when Ruff
+      // ran; but it might be helpful to show them
+      sh "cat $wngRuffFile"
+    }
      if (returnValue != 0) {
-      echo 'flake8 failed.'
+      echo 'Ruff failed.'
       success = false
     }
   }
 
-  // Run isort
-  if (isortDirs.length() > 0) {
-    returnValue = sh 'returnStatus': true, 'script': "isort --check-only $isortDirs"
-    if (returnValue != 0) {
-      echo 'isort failed.'
-      success = false
-    }
-  }
-
-  // Run mypy
+  // Run Mypy
   if (mypyDirs.length() > 0) {
-    if (wngMypyRedirection) {
+    if (wngMypyFile != '') {
       generatedReportFiles += 'warningsNextGeneration--mypy|'
     }
-    returnValue = sh 'returnStatus': true, 'script': "mypy $mypyDirs $wngMypyRedirection"
+    script = "mypy $mypyDirs"
+    if (wngMypyFile != '') {
+      script += "> $wngMypyFile"
+    }
+    returnValue = sh returnStatus: true, script: script
+    if (wngMypyFile != '') {
+      // As the output was redirected, the warnings weren't shown in the log when Mypy
+      // ran; but it might be helpful to show them
+      sh "cat $wngMypyFile"
+    }
     if (returnValue != 0) {
-      echo 'mypy failed.'
+      echo 'Mypy failed.'
       success = false
     }
   }
@@ -123,8 +131,8 @@ def generatePythonTestReports() {
   if (env.saaoGeneratedReportedFiles.contains('allure--pytest')) {
     allure includeProperties: false, jdk: '', results: [[path: "${reportsDir}/allure"]]
   }
-  if (env.saaoGeneratedReportedFiles.contains('warningsNextGeneration--flake8')) {
-    recordIssues(tools: [flake8(pattern: "${reportsDir}/warnings-next-generation/flake8.txt")])
+  if (env.saaoGeneratedReportedFiles.contains('warningsNextGeneration--ruff')) {
+    recordIssues(tools: [flake8(name: 'Ruff', pattern: "${reportsDir}/warnings-next-generation/ruff.txt")])
   }
   if (env.saaoGeneratedReportedFiles.contains('warningsNextGeneration--mypy')) {
     recordIssues(tools: [myPy(pattern: "${reportsDir}/warnings-next-generation/mypy.txt")])
