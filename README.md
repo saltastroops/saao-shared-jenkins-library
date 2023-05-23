@@ -26,7 +26,7 @@ brew services restart jenkins
 
 ### Plugins
 
-In addition to the recommended plugins installed when first starting Jenkins the following plugins are required.
+In addition to the recommended plugins installed when first starting Jenkins, the following plugins are required.
 
 * [Docker Pipeline](https://plugins.jenkins.io/docker-workflow/) (Note this is not the same as the "Docker" plugin.)
 * [SSH Pipeline Steps](https://plugins.jenkins.io/ssh-steps/)
@@ -43,7 +43,7 @@ Then select the "Tools" option.
 
 ![Tools option](doc/images/tools.png)
 
-Scroll down to the "Allure commandline installations" section and click oon the "Add Allure Commandline" button.
+Scroll down to the "Allure commandline installations" section and click on the "Add Allure Commandline" button.
 
 ![Allure commandline installations section](doc/images/allure_section.png)
 
@@ -51,7 +51,7 @@ Add a name and leave the other settings unchanged.
 
 ![Allure settings](doc/images/allure_settings.png)
 
-Save the settings by clicking on the Save button at the bottom of the page.
+Save the settings by clicking on the "Save" button at the bottom of the page.
 
 #### An important caveat
 
@@ -59,7 +59,7 @@ Allure cannot run on a Docker agent. So if you use the `generatePythonTestReport
 
 ### Other requirements
 
-Some of the steps require software like Python. The easiest way to accommodate such requirements is to run your pipeline by a Docker agent specified by a Dockerfile provided along with your project. This will be explained in more detail when discussing the `saaoRunPythonTests` function below.
+Some of the steps require software like Python. The easiest way to accommodate such requirements is to run your pipeline by a Docker agent specified by a Dockerfile provided along with your project. This will be explained in more detail when discussing the `saao.runPythonTests` function below.
 
 ## Installation
 
@@ -75,7 +75,7 @@ The system configuration page is quite long, but if you scroll down, you will ev
 
 ![Global Pipeline Libraries section](doc/images/global_pipeline_libraries.png)
 
-Click on the Add button and configure the library as follows.
+Click on the "Add" button and configure the library as follows.
 
 * Choose `saao-shared-library` as the name.
 * Use `main` as the default version.
@@ -88,17 +88,17 @@ The screenshots below highlight the settings you have to change.
 
 ![Library settings (part 2)](doc/images/library_settings_2.png)
 
-Finally, click the Save button at the bottom of the page to save your changes.
+Finally, click the "Save" button at the bottom of the page to save your changes.
 
-The library is now available. However, to make its pipeline syntax documentation more readable, you need to enable HTML formatting. To do so, click on the Manage Jenkins link in the breadcrumbs at the top of the page and select the Configure Global Security option.
+The library is now available. However, to make its pipeline syntax documentation more readable, you need to enable HTML formatting. To do so, click on the "Manage Jenkins" link in the breadcrumbs at the top of the page and select the "Configure Global Security" option.
 
 ![Global Security option](doc/images/global_security.png)
 
-Scroll down to the Markup Formatter section and select Safe HTML as the formatter option.
+Scroll down to the "Markup Formatter" section and select "Safe HTML" as the formatter option.
 
 ![Markup Formatter section](doc/images/markup_formatter.png)
 
-Remember to click the Save button at the bottom of the page to save your changes.
+Remember to click the "Save" button at the bottom of the page to save your changes.
 
 ## Using the library
 
@@ -108,11 +108,11 @@ In case you are using a declarative pipeline, you need to call the functions wit
 
 ## Viewing the documentation
 
-For convenience, documentation about the library's steps is provided in Jenkins' pipeline syntax documentation. To access it, select the Pipeline Syntax item from the sidebar menu of your pipeline page.
+For convenience, documentation about the library's steps is provided in Jenkins' pipeline syntax documentation. To access it, select the "Pipeline Syntax" item from the sidebar menu of your pipeline page.
 
 ![Pipeline Syntax menu item](doc/images/pipeline_syntax.png)
 
-Then choose the Global Variables Reference item from the sidebar menu.
+Then choose the "Global Variables Reference" item from the sidebar menu.
 
 ![Global Variables Reference menu item](doc/images/global_variables_reference.png)
 
@@ -184,7 +184,9 @@ pipeline {
       steps {
         sh 'echo $PATH'
         sh 'poetry export -f requirements.txt --with dev --output requirements.txt'
-        saaoRunPythonTests()
+        script {
+          saao.runPythonTests black: ['src'] 
+        }
       }
     }
   }
@@ -205,7 +207,7 @@ The `args` string passed to `dockerfile` adds a Docker volume for caching the in
 
 A check is only performed if the corresponding argument is included and its value is not an empty list.
 
-By default `saaoRunPythonTests` generates the necessary files for Allure in a folder `reports/allure` whenever it runs pytest, and the necessary files for Warnings Next Generation in a folder `reports/warnings-next-generation` whenever it runs Ruff or Mypy. You may configure this by passing the following arguments.
+By default `saao.runPythonTests` generates the necessary files for Allure in a folder `reports/allure` whenever it runs pytest, and the necessary files for Warnings Next Generation in a folder `reports/warnings-next-generation` whenever it runs Ruff or Mypy. You may configure this by passing the following arguments.
 
 | Argument               | Required? | Explanation                                                                           | Example value         |
 |------------------------|-----------|---------------------------------------------------------------------------------------|-----------------------|
@@ -236,13 +238,13 @@ unstash 'reports'
 `runPythonTests` returns `true` if all checks pass, and `false` otherwise. If you need to know which particular checks have failed, you have to make individual calls for the tools. For example:
 
 ```groovy
-saaoRunPythonTests 'black': ['src', 'tests']
-saaoRunPythonTests 'pytest': ['tests']
+saao.runPythonTests 'black': ['src', 'tests']
+saao.runPythonTests 'pytest': ['tests']
 ```
 
 ### generatePythonTestReports
 
-This is a convenience step for generating the Allure and Warnings Next Generation reports. You can only execute this step after the `runPythoinTests` step. These two steps may be run on different agents.
+This is a convenience step for generating the Allure and Warnings Next Generation reports. You can only execute this step after the `runPythonTests` step. These two steps may be run on different agents.
 
 `generatePythonTestReports` takes no arguments.
 
@@ -276,11 +278,11 @@ services:
     restart: always
 ```
 
-`saaoDeployContainer` takes several arguments (as a map).
+`saao.deployContainer` takes several arguments (as a map).
 
 | Argument              | Required? | Explanation                                                                                                                                                                        | Example value                   |
 |-----------------------|-----------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------|
-| dockerComposeFile     | No        | Path of the docker compose file to use for dseploying.                                                                                                                             | docker-compose.yml              |
+| dockerComposeFile     | No        | Path of the docker compose file to use for deploying.                                                                                                                             | docker-compose.yml              |
 | dockerFile            | No        | Path of the Dockerfile to use for building the image.                                                                                                                              | Dockerfile                      |
 | host                  | Yes       | Address of the deployment server.                                                                                                                                                  | dev.example.com                 |
 | hostCredentialsId     | Yes       | Identifier of the credentials for the username on the deployment server and the private SSH key of the Jenkins user.                                                               | dev-server-credentials          |
