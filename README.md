@@ -102,7 +102,13 @@ Remember to click the Save button at the bottom of the page to save your changes
 
 ## Using the library
 
-Once you have installed the library, you can use it in any of your pipelines by importing it at the top of the pipeline script and then calling its functions.
+Once you have installed the library, you can use it in any of your pipelines by importing it at the top of the pipeline script and then calling its functions. You import the library by including the following line at top of your pipeline file:
+
+```groovy
+@Library('saao-shared-library') _
+```
+
+The underscore at the end is required; it serves as a default import.
 
 In case you are using a declarative pipeline, you need to call the functions within a `script` block.
 
@@ -182,9 +188,11 @@ pipeline {
   stages {
     stage("Run tests") {
       steps {
-        sh 'echo $PATH'
         sh 'poetry export -f requirements.txt --with dev --output requirements.txt'
-        saaoRunPythonTests()
+        sh 'pip install -r requirements.txt'
+        script {
+          saao.runPythonTests()
+        }
       }
     }
   }
@@ -205,7 +213,7 @@ The `args` string passed to `dockerfile` adds a Docker volume for caching the in
 
 A check is only performed if the corresponding argument is included and its value is not an empty list.
 
-By default `saaoRunPythonTests` generates the necessary files for Allure in a folder `reports/allure` whenever it runs pytest, and the necessary files for Warnings Next Generation in a folder `reports/warnings-next-generation` whenever it runs Ruff or Mypy. You may configure this by passing the following arguments.
+By default `runPythonTests` generates the necessary files for Allure in a folder `reports/allure` whenever it runs pytest, and the necessary files for Warnings Next Generation in a folder `reports/warnings-next-generation` whenever it runs Ruff or Mypy. You may configure this by passing the following arguments.
 
 | Argument               | Required? | Explanation                                                                           | Example value         |
 |------------------------|-----------|---------------------------------------------------------------------------------------|-----------------------|
@@ -236,8 +244,8 @@ unstash 'reports'
 `runPythonTests` returns `true` if all checks pass, and `false` otherwise. If you need to know which particular checks have failed, you have to make individual calls for the tools. For example:
 
 ```groovy
-saaoRunPythonTests 'black': ['src', 'tests']
-saaoRunPythonTests 'pytest': ['tests']
+saao.runPythonTests 'black': ['src', 'tests']
+saao.runPythonTests 'pytest': ['tests']
 ```
 
 ### generatePythonTestReports

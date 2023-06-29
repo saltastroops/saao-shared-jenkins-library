@@ -91,7 +91,7 @@ an empty list.
 <p>In the following example only Black, Ruff and pytest are run, and only reports for Allure are generated:</p>
 
 <pre>
-saaoRunPythonTests(
+saao.runPythonTests(
   'bandit': [],
   'black': ['src', 'tests'],
   'ruff': ['src', 'tests'],
