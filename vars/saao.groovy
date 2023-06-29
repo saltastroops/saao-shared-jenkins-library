@@ -10,11 +10,15 @@ def runPythonTests(Map config = [:] ) {
   mypyDirs = _dirs(config, 'mypy')
   pytestDirs = _dirs(config, 'pytest')
 
-  // Get the  base directory for storing report-related files
+  // Get the base directory for storing report-related files
   reportsDir = "reports"
   if (config.containsKey('reportsDir')) {
+    // Replace multiple slashes with a single one, and remove trailing slashes
     reportsDir = config.reportsDir.replaceAll(/\/+/, "/").replaceAll(/\/$/, "")
   }
+
+  // Create the base directory for reports if necessary
+  sh "mkdir -p ${reportsDir}"
 
   // Get the Allure option
   allureOption = ''

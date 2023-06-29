@@ -130,7 +130,7 @@ You can now scroll to the `saao` section to view the documentation.
 
 By default, `runPythonTests` creates the necessary files for an Allure report whenever it runs `pytest`. (You can disable this by passing the `allure` argument with the value `false`.)
 
-The report files are created in a folder `reports` in the workspace. If you require a different folder, you can specify it with the `reportsDir` argument. 
+The report files are created in a folder `reports` in the workspace. If you require a different folder, you can specify it with the `reportsDir` argument. The folder is created if it does not exist, along with any missing parent directories. 
 
 However, `runPythonTests` does *not* generate the actual report. For this you need to call the `generatePythonTestReports` function or directly include an `allure` step in your pipeline.
 
