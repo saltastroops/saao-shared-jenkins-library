@@ -17,8 +17,9 @@ def runPythonTests(Map config = [:] ) {
     reportsDir = config.reportsDir.replaceAll(/\/+/, "/").replaceAll(/\/$/, "")
   }
 
-  // Create the base directory for reports if necessary
-  sh "mkdir -p ${reportsDir}"
+  // Create the directories for reports if necessary
+  sh "mkdir -p ${reportsDir}/allure"
+  sh "mkdir -p ${reportsDir}/warnings-next-generation"
 
   // Get the Allure option
   allureOption = ''
