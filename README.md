@@ -221,6 +221,12 @@ By default `saao.runPythonTests` generates the necessary files for Allure in a f
 | reportsDir             | No        | The folder in which to put the created report files. The default is `'reports'`.      | `'generated-reports'` |
 | warningsNextGeneration | No        | Whether to generate report files for Warnings Next Generation. The default is `true`. | `false`               |
 
+If you are using Poetry, you should pass `true` for the (optional) `usePoetry` argument.
+
+| Argument  | Required? | Explanation                                                           | Example value |
+|-----------|-----------|-----------------------------------------------------------------------|---------------|
+| usePoetry | No        | Whether to use Poetry when running the tests. The default is `false`. | `true`        |
+
 As an example, the following call runs Black and Mypy on the `src` and `tests` folder and pytest on the `tests` folder, but runs no other tools. It creates report files for Allure, but no files for Warnings Next Generation.
 
 ```groovy

@@ -37,10 +37,16 @@ def runPythonTests(Map config = [:] ) {
     wngMypyFile = "${reportsDir}/warnings-next-generation/mypy.txt"
   }
 
+  // Should Poetry be used?
+  poetryPrefix = ''
+  if (config.containsKey('usePoetry') && config.usePoetry) {
+    poetryPrefix = 'poetry run '
+  }
+
   // Run Bandit
   success = true
   if (banditDirs.length() > 0) {
-    returnValue = sh 'returnStatus': true, 'script': "bandit -r $banditDirs"
+    returnValue = sh 'returnStatus': true, 'script': "${poetryPrefix}bandit -r $banditDirs"
     if (returnValue != 0) {
       echo 'bandit failed.'
       success = false
@@ -49,7 +55,7 @@ def runPythonTests(Map config = [:] ) {
 
   // Run Black
   if (blackDirs.length() > 0) {
-    returnValue = sh 'returnStatus': true, 'script': "black --check $blackDirs"
+    returnValue = sh 'returnStatus': true, 'script': "${poetryPrefix}black --check $blackDirs"
     if (returnValue != 0) {
       echo 'black failed.'
       success = false
@@ -61,7 +67,7 @@ def runPythonTests(Map config = [:] ) {
     if (wngRuffFile != '') {
       generatedReportFiles += 'warningsNextGeneration--ruff|'
     }
-    script = "ruff $wngRuffOption $ruffDirs"
+    script = "${poetryPrefix}ruff $wngRuffOption $ruffDirs"
     if (wngRuffFile != '') {
       script += "> $wngRuffFile"
     }
@@ -82,7 +88,7 @@ def runPythonTests(Map config = [:] ) {
     if (wngMypyFile != '') {
       generatedReportFiles += 'warningsNextGeneration--mypy|'
     }
-    script = "mypy $mypyDirs"
+    script = "${poetryPrefix}mypy $mypyDirs"
     if (wngMypyFile != '') {
       script += "> $wngMypyFile"
     }
@@ -105,7 +111,7 @@ def runPythonTests(Map config = [:] ) {
     }
     returnValue = sh(
             'returnStatus': true,
-            'script': "pytest $allureOption $pytestDirs"
+            'script': "${poetryPrefix}pytest $allureOption $pytestDirs"
     )
     if (returnValue != 0) {
       echo 'pytest failed.'

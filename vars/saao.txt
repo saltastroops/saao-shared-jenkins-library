@@ -100,6 +100,16 @@ saao.runPythonTests(
 )
 </pre>
 
+<p>If you are using Poetry, you should pass true for the (optional) usePoetry argument. For example:</p>
+
+<pre>
+saao.runPythonTests(
+  'black': ['src', 'tests'],
+  'pytest': ['tests'],
+  'usePoetry': true
+)
+</pre>
+
 <p>The step returns <code>true</code> if all tests pass, and <code>false</code>
 otherwise.</p>
 
