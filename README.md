@@ -102,7 +102,13 @@ Remember to click the "Save" button at the bottom of the page to save your chang
 
 ## Using the library
 
-Once you have installed the library, you can use it in any of your pipelines by importing it at the top of the pipeline script and then calling its functions.
+Once you have installed the library, you can use it in any of your pipelines by importing it at the top of the pipeline script and then calling its functions. You import the library by including the following line at top of your pipeline file:
+
+```groovy
+@Library('saao-shared-library') _
+```
+
+The underscore at the end is required; it serves as a default import.
 
 In case you are using a declarative pipeline, you need to call the functions within a `script` block.
 
@@ -182,8 +188,8 @@ pipeline {
   stages {
     stage("Run tests") {
       steps {
-        sh 'echo $PATH'
         sh 'poetry export -f requirements.txt --with dev --output requirements.txt'
+        sh 'pip install -r requirements.txt'
         script {
           saao.runPythonTests black: ['src'] 
         }
